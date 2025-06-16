@@ -1,0 +1,67 @@
+import React, { useState } from "react";
+
+function AddTeacherModal({ onClose, setTeachers }) {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    idNumber: "",
+    teacherNumber: "",
+    subject: "",
+    gradeLevel: "",
+    startDate: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newTeacher = {
+      id: Date.now(), // or use a better ID generator
+      name: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      subject: formData.subject,
+      status: "Active",
+      students: 0,
+      gradeLevel: formData.gradeLevel,
+      startDate: formData.startDate,
+    };
+
+    setTeachers((prev) => [...prev, newTeacher]);
+    onClose(); // Close modal
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded-lg w-full max-w-lg relative">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-semibold mb-4 text-black">Add New Teacher</h2>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
+          <input name="fullName" type="text" placeholder="Full Name ..." value={formData.fullName} onChange={handleChange} className="border p-2 rounded text-black" required />
+          <input name="email" type="email" placeholder="Email Address..." value={formData.email} onChange={handleChange} className="border p-2 rounded text-black" required />
+          <input name="phone" type="text" placeholder="Phone Number..." value={formData.phone} onChange={handleChange} className="border p-2 rounded text-black" required />
+          <input name="idNumber" type="text" placeholder="ID Number..." value={formData.idNumber} onChange={handleChange} className="border p-2 rounded text-black" required />
+          <input name="teacherNumber" type="text" placeholder="Teacher Number..." value={formData.teacherNumber} onChange={handleChange} className="border p-2 rounded text-black" required />
+          <input name="subject" type="text" placeholder="Subject Taught..." value={formData.subject} onChange={handleChange} className="border p-2 rounded text-black" required />
+          <input name="gradeLevel" type="text" placeholder="Grade Level Assigned..." value={formData.gradeLevel} onChange={handleChange} className="border p-2 rounded text-black" required />
+          <input name="startDate" type="date" value={formData.startDate} onChange={handleChange} className="border p-2 rounded text-black" required />
+          <input type="password" placeholder="Password..." className="border p-2 rounded text-black" />
+          <button type="submit" className="bg-[#ffc01d] text-white py-2 rounded hover:bg-black hover:text-white">
+            Save Teacher
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default AddTeacherModal;
