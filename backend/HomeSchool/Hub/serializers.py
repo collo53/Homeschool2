@@ -8,9 +8,20 @@ class PrincipalLoginSerializer(serializers.ModelSerializer):
 class StudentTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentTable
-        fields = ["RegNumber", "Password"]
+        fields = ["name", "grade", "studentNumber", "Password", "status", "courses"]
 
 class TeacherTableSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TeacherTable
-        fields = ["TeacherNumber", "Password"]
+        model = TeacherDetails
+        fields = ["Name", "Email", "Phone", "ID_number", "TeacherNumber", "Password", "Unit", "Grade", "DateHired"] 
+
+class CourseTableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseTable
+        fields = ["Name", "Teacher", "Students", "Schedule", "Status"]
+
+class EventTableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventTable
+        fields = ["Title", "Date", "Time", "Location", "Type"]
+        

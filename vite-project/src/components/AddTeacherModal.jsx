@@ -7,6 +7,7 @@ function AddTeacherModal({ onClose, setTeachers }) {
     phone: "",
     idNumber: "",
     teacherNumber: "",
+    password:"",
     subject: "",
     gradeLevel: "",
     startDate: "",
@@ -17,23 +18,42 @@ function AddTeacherModal({ onClose, setTeachers }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newTeacher = {
-      id: Date.now(), // or use a better ID generator
-      name: formData.fullName,
-      email: formData.email,
-      phone: formData.phone,
-      subject: formData.subject,
-      status: "Active",
-      students: 0,
-      gradeLevel: formData.gradeLevel,
-      startDate: formData.startDate,
-    };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    setTeachers((prev) => [...prev, newTeacher]);
-    onClose(); // Close modal
+  const teacherPayload = {
+    Name: formData.fullName,
+    Email: formData.email,
+    Phone: formData.phone,
+    ID_number: formData.idNumber,
+    TeacherNumber: formData.teacherNumber,
+    Password: formData.password, 
+    Unit: formData.subject,
+    Grade: formData.gradeLevel,
+    DateHired: formData.startDate,
   };
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/Hub/addteacher/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(teacherPayload),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setTeachers((prev) => [...prev, data]);
+      onClose();
+    } else {
+      console.error("Failed to save teacher");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -54,8 +74,7 @@ function AddTeacherModal({ onClose, setTeachers }) {
           <input name="subject" type="text" placeholder="Subject Taught..." value={formData.subject} onChange={handleChange} className="border p-2 rounded text-black" required />
           <input name="gradeLevel" type="text" placeholder="Grade Level Assigned..." value={formData.gradeLevel} onChange={handleChange} className="border p-2 rounded text-black" required />
           <input name="startDate" type="date" value={formData.startDate} onChange={handleChange} className="border p-2 rounded text-black" required />
-          <input type="password" placeholder="Password..." className="border p-2 rounded text-black" />
-          <button type="submit" className="bg-[#ffc01d] text-white py-2 rounded hover:bg-black hover:text-white">
+          <input name="password" type="password" placeholder="Password..."  value={formData.password} onChange={handleChange} className="border p-2 rounded text-black" required/>          <button type="submit" className="bg-[#ffc01d] text-white py-2 rounded hover:bg-black hover:text-white">
             Save Teacher
           </button>
         </form>

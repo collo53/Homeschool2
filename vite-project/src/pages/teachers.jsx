@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppSidebar from '../components/AppSidebar';
 import Toggle from '../components/toggle';
 import TeacherHero from '../components/teacherhero';
 import TeacherInfo from '../components/teacherinfo';
-import TeacherProfileModal from '../components/TeacherProfileModal'; 
+import TeacherProfileModal from '../components/TeacherProfileModal';
 
 function Teachers() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedTeacher, setSelectedTeacher] = useState(null); 
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [teachers, setTeachers] = useState([]);
 
-  const [teachers, setTeachers] = useState([
-    { id: 1, name: "Dr. Sarah Wilson", subject: "Mathematics", email: "s.wilson@school.edu", status: "Active", students: 124 },
-    { id: 2, name: "Prof. Michael Brown", subject: "Science", email: "m.brown@school.edu", status: "Active", students: 98 },
-    { id: 3, name: "Ms. Emily Davis", subject: "English", email: "e.davis@school.edu", status: "On Leave", students: 156 },
-    { id: 4, name: "Mr. James Miller", subject: "History", email: "j.miller@school.edu", status: "Active", students: 87 },
-  ]);
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/Hub/getteachers/");
+        if (response.ok) {
+          const data = await response.json();
+          setTeachers(data);
+        } else {
+          console.error("Failed to fetch teachers");
+        }
+      } catch (error) {
+        console.error("Error fetching teachers:", error);
+      }
+    };
+
+    fetchTeachers();
+  }, []); // Runs once on mount
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

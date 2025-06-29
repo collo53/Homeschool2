@@ -1,27 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaPlus,
   FaCalendarAlt,
   FaClock,
   FaMapMarkerAlt,
 } from "react-icons/fa";
+import axios from "axios";
 import EventModal from "../components/EventModal";
 
 const CalendarHero = () => {
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "Parent-Teacher Conference",
-      date: "2024-11-20",
-      time: "14:00 - 18:00",
-      location: "Main Hall",
-      type: "Meeting",
-      color: "bg-blue-100 text-blue-800",
-    },
-  ]);
-
+  const [events, setEvents] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editEvent, setEditEvent] = useState(null);
+
+  const typeToColor = {
+    Meeting: "bg-blue-100 text-blue-800",
+    Event: "bg-green-100 text-green-800",
+    Official: "bg-purple-100 text-purple-800",
+    Internal: "bg-yellow-100 text-yellow-800",
+  };
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/Hub/getevents/");
+        const fetchedEvents = response.data.map(event => ({
+          id: event.id,
+          title: event.Title,
+          date: event.Date,
+          time: event.Time,
+          location: event.Location,
+          type: event.Type,
+          color: typeToColor[event.Type] || "bg-gray-100 text-gray-800",
+        }));
+        setEvents(fetchedEvents);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   const handleAdd = () => {
     setEditEvent(null);
@@ -33,27 +51,19 @@ const CalendarHero = () => {
     setModalOpen(true);
   };
 
-  const typeToColor = {
-  Meeting: "bg-blue-100 text-blue-800",
-  Event: "bg-green-100 text-green-800",
-  Official: "bg-purple-100 text-purple-800",
-  Internal: "bg-yellow-100 text-yellow-800",
-};
+  const handleSave = (newEvent) => {
+    const color = typeToColor[newEvent.type] || "bg-gray-100 text-gray-800";
 
-const handleSave = (newEvent) => {
-  const color = typeToColor[newEvent.type] || "bg-gray-100 text-gray-800";
+    if (editEvent) {
+      setEvents(events.map(e =>
+        e.id === editEvent.id ? { ...newEvent, id: editEvent.id, color } : e
+      ));
+    } else {
+      setEvents([...events, { ...newEvent, id: Date.now(), color }]);
+    }
 
-  if (editEvent) {
-    setEvents(events.map(e =>
-      e.id === editEvent.id ? { ...newEvent, id: editEvent.id, color } : e
-    ));
-  } else {
-    setEvents([...events, { ...newEvent, id: Date.now(), color }]);
-  }
-
-  setModalOpen(false);
-};
-
+    setModalOpen(false);
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -68,8 +78,9 @@ const handleSave = (newEvent) => {
         </button>
       </div>
 
-      {/* Upcoming Events */}
+      {/* Events List */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Upcoming Events */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow">
             <div className="p-5 border-b border-gray-200 flex items-center gap-2">
@@ -77,7 +88,7 @@ const handleSave = (newEvent) => {
               <h2 className="text-lg font-semibold text-slate-900">Upcoming Events</h2>
             </div>
             <div className="p-5 space-y-4">
-              {events.map((event) => (
+              {events.map(event => (
                 <div key={event.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between">
                     <div className="space-y-2">
@@ -115,7 +126,7 @@ const handleSave = (newEvent) => {
           </div>
         </div>
 
-        {/* Today's Schedule (You can filter events for today here) */}
+        {/* Today's Schedule */}
         <div>
           <div className="bg-white rounded-lg shadow">
             <div className="p-5 border-b border-gray-200 flex items-center gap-2">
@@ -123,7 +134,6 @@ const handleSave = (newEvent) => {
               <h2 className="text-lg font-semibold text-slate-900">Today's Schedule</h2>
             </div>
             <div className="p-5 space-y-4">
-              {/* Optionally show only events with today's date */}
               {events
                 .filter(e => e.date === new Date().toISOString().split("T")[0])
                 .map((event, index) => (
@@ -140,6 +150,7 @@ const handleSave = (newEvent) => {
         </div>
       </div>
 
+      {/* Modal */}
       {modalOpen && (
         <EventModal
           event={editEvent}

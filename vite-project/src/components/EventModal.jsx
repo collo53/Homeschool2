@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-
+import axios from "axios";
 const EventModal = ({ event, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     title: "",
     date: "",
     time: "",
     location: "",
-    type: "Meeting",
+    type: "",
   });
 
   useEffect(() => {
@@ -18,9 +18,28 @@ const EventModal = ({ event, onClose, onSave }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
+    
 
-  const handleSubmit = () => {
+  };
+ 
+
+
+
+  const handleSubmit = async() => {
+    const newEvent = {
+      Title: formData.title,
+      Date: formData.date,
+      Time: formData.time,
+      Location: formData.location,
+      Type: formData.type,
+    };
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/Hub/addevents/", newEvent);
+      console.log("Event added successfully:", response.data);
+    }
+    catch (error) {
+      console.error("Error adding event", error);
+    }
     onSave(formData);
   };
 
@@ -30,7 +49,7 @@ const EventModal = ({ event, onClose, onSave }) => {
         <h2 className="text-xl font-semibold text-black">{event ? "Edit Event" : "Add Event"}</h2>
         <input name="title" value={formData.title} onChange={handleChange} placeholder="Title" className="w-full border p-2 rounded text-black" />
         <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full border p-2 rounded text-black" />
-        <input name="time" value={formData.time} onChange={handleChange} placeholder="Time" className="w-full border p-2 rounded text-black" />
+        <input  type="time" name="time" value={formData.time} onChange={handleChange} placeholder="Time" className="w-full border p-2 rounded text-black" />
         <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" className="w-full border p-2 rounded text-black" />
         <select name="type" value={formData.type} onChange={handleChange} className="w-full border p-2 rounded text-black">
           <option>Meeting</option>

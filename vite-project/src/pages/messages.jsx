@@ -32,7 +32,7 @@ function Messages(){
       <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? "pl-72" : "pl-0"}`}>
         <div className="pt-12 px-6 ">
         <MessagesHero />
-           
+            
         </div>
         <div>
            

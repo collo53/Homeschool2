@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import AppSidebar from "../components/AppSidebar";
 import Toggle from "../components/toggle";
 import CourseHero from "../components/coursehero";
+import axios from "axios";
 
 function Courses() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -14,16 +15,61 @@ function Courses() {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
-  const [formData, setFormData] = useState({ name: "", teacher: "", students: 0, schedule: "", status: "Active" });
+  const [formData, setFormData] = useState({ 
+    name: "", teacher: "", students: 0, schedule: "", status: "Active" 
+  });
+
+useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
+      const normalizedCourses = response.data.map((c, index) => ({
+        id: index + 1, 
+        name: c.Name,
+        teacher: c.Teacher,
+        students: c.Students,
+        schedule: c.Schedule,
+        status: c.Status,
+      }));
+      setCourses(normalizedCourses);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    }
+  };
+  fetchCourses();
+}, []);
+
+
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  const handleAdd = () => {
-    const newCourse = { ...formData, id: Date.now() };
-    setCourses([...courses, newCourse]);
-    setFormData({ name: "", teacher: "", students: 0, schedule: "", status: "Active" });
-    setShowAddModal(false);
+  const handleAdd = async () => {
+  const newCourse = {
+    Name: formData.name,
+    Teacher: formData.teacher,
+    Students: formData.students,
+    Schedule: formData.schedule,
+    Status: formData.status,
   };
+
+  try {
+    await axios.post("http://127.0.0.1:8000/Hub/addcourse/", newCourse);
+    const response = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
+    const normalizedCourses = response.data.map((c, index) => ({
+      id: index + 1,
+      name: c.Name,
+      teacher: c.Teacher,
+      students: c.Students,
+      schedule: c.Schedule,
+      status: c.Status,
+    }));
+    setCourses(normalizedCourses);
+  } catch (error) {
+    console.error("Error adding course", error);
+  }
+
+  setShowAddModal(false);
+};
 
   const handleUpdate = () => {
     const updated = courses.map(c => c.id === editingCourse.id ? { ...formData, id: c.id } : c);
@@ -67,12 +113,16 @@ function Courses() {
           <div className="bg-white p-6 rounded w-full max-w-md">
             <h2 className="text-2xl font-semibold mb-4 text-black text-center">Add Course</h2>
             <input
+              type="text"
+              name="name"
               className="w-full mb-2 p-2 border rounded text-black"
               placeholder="Course Name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <input
+              type="text"
+              name="teacher"
               className="w-full mb-2 p-2 border rounded text-black"
               placeholder="Teacher Name"
               value={formData.teacher}
@@ -80,19 +130,22 @@ function Courses() {
             />
             <input
               type="number"
+              name="students"
               className="w-full mb-2 p-2 border rounded text-black"
               placeholder="Students"
               value={formData.students}
               onChange={(e) => setFormData({ ...formData, students: parseInt(e.target.value) })}
             />
             <input
-            type="text"
+              type="date"
+              name="schedule"
               className="w-full mb-2 p-2 border rounded text-black"
               placeholder="Schedule"
               value={formData.schedule}
               onChange={(e) => setFormData({ ...formData, schedule: e.target.value })}
             />
             <select
+            name="status"
               className="w-full mb-4 p-2 border rounded text-black"
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}

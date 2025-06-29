@@ -12,8 +12,8 @@ function TeacherInfo({ teachers, onViewProfile }) {
                 <FaUser className="h-6 w-6 text-slate-600" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-black">{teacher.name}</h2>
-                <p className="text-sm text-slate-600">{teacher.subject}</p>
+                <h2 className="text-lg font-semibold text-black">{teacher.Name}</h2>
+                <p className="text-sm text-slate-600">{teacher.Unit}</p>
               </div>
             </div>
             <span
@@ -29,11 +29,11 @@ function TeacherInfo({ teachers, onViewProfile }) {
 
           <div className="flex items-center gap-2 text-sm text-slate-600 mb-3">
             <FaEnvelope className="h-4 w-4" />
-            <span>{teacher.email}</span>
+            <span>{teacher.Email}</span>
           </div>
 
           <div className="flex items-center justify-between text-sm text-slate-600">
-            <span>Students: {teacher.students?.length || 0}</span>
+            <span>Grade: {teacher.Grade}</span>
             <button
               onClick={() => onViewProfile(teacher)}
               className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100"

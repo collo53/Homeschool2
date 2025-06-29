@@ -40,9 +40,9 @@ function TeacherProfileModal({ teacher, onClose, setTeachers }) {
         <h2 className="text-2xl font-semibold mb-4 text-black">Teacher Profile</h2>
 
         <div className="text-black space-y-2 mb-4">
-          <p><strong>Name:</strong> {teacher.name}</p>
-          <p><strong>Email:</strong> {teacher.email}</p>
-          <p><strong>Subject:</strong> {teacher.subject}</p>
+          <p><strong>Name:</strong> {teacher.Name}</p>
+          <p><strong>Email:</strong> {teacher.Email}</p>
+          <p><strong>Subject:</strong> {teacher.Unit}</p>
           <p><strong>Status:</strong> {teacher.status}</p>
         </div>
 

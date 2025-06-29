@@ -1,47 +1,61 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { FaPlus, FaUser, FaSearch, FaGraduationCap } from "react-icons/fa";
 import StudentProfileModal from "../components/StudentProfileModal";
+import axios from "axios";
+import { Await } from "react-router-dom";
 
-const initialStudents = [
-  { id: 1, name: "Alex Johnson", grade: "12th", gpa: 3.8, status: "Active", courses: 6 },
-  { id: 2, name: "Emma Williams", grade: "11th", gpa: 3.9, status: "Active", courses: 7 },
-  { id: 3, name: "Michael Chen", grade: "10th", gpa: 3.7, status: "Active", courses: 6 },
-  { id: 4, name: "Sophia Rodriguez", grade: "12th", gpa: 4.0, status: "Honor Roll", courses: 8 },
-  { id: 5, name: "David Thompson", grade: "9th", gpa: 3.5, status: "Active", courses: 5 },
-  { id: 6, name: "Olivia Martinez", grade: "11th", gpa: 3.6, status: "Active", courses: 7 },
-];
 
-export default function StudentInfo() {
-  const [students, setStudents] = useState(initialStudents);
+
+export default function StudentInfo({students: fetchedStudents=[]}) {
+  const [students, setStudents] = useState(fetchedStudents);
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [newStudent, setNewStudent] = useState({
     name: "",
     grade: "",
-    gpa: "",
+    studentNumber: "",
+    password: "",
     status: "Active",
     courses: "",
   });
+    useEffect(() => {
+    setStudents(fetchedStudents);
+  }, [fetchedStudents]);
+
 
   const handleChange = (e) => {
     setNewStudent({ ...newStudent, [e.target.name]: e.target.value });
   };
 
-  const handleAddStudent = () => {
-    const id = students.length + 1;
-    setStudents([
-      ...students,
-      {
-        id,
-        ...newStudent,
-        gpa: parseFloat(newStudent.gpa),
-        courses: parseInt(newStudent.courses),
-      },
-    ]);
-    setNewStudent({ name: "", grade: "", gpa: "", status: "Active", courses: "" });
-    setShowModal(false);
+const handleAddStudent = async () => {
+  const id = students.length + 1;
+  setStudents([
+    ...students,
+    {
+      id,
+      ...newStudent,
+      gpa: parseFloat(newStudent.gpa),
+      courses: parseInt(newStudent.courses),
+    },
+  ]);
+  setNewStudent({ name: "", grade: "", password: "", studentNumber: "", status: "Active", courses: "" });
+  setShowModal(false);
+  const studentPayload = {
+    name : newStudent.name,
+    grade: newStudent.grade,
+    studentNumber: newStudent.studentNumber,
+    Password: newStudent.password,
+    status: newStudent.status,
+    courses: newStudent.courses,
   };
+  try {
+    const response = await axios.post("http://127.0.0.1:8000/Hub/addstudent/", studentPayload);
+    console.log("Success:", response.data);
+  } catch (error) {
+    console.error("Error adding student", error);
+  }
+}
 
   const handleAssignTeacher = (id, teacherName) => {
     const updated = students.map((student) =>
@@ -49,6 +63,7 @@ export default function StudentInfo() {
     );
     setStudents(updated);
   };
+  
 
   return (
     <div className="p-6 space-y-6">
@@ -102,8 +117,8 @@ export default function StudentInfo() {
             </div>
 
             <div className="text-sm mb-2 flex justify-between">
-              <span className="text-slate-600">GPA:</span>
-              <span className="font-semibold text-slate-900">{student.gpa}</span>
+              <span className="text-slate-600">Student Number</span>
+              <span className="font-semibold text-slate-900">{student.studentNumber}</span>
             </div>
 
             <div className="text-sm mb-4 flex justify-between">
@@ -127,7 +142,6 @@ export default function StudentInfo() {
         ))}
       </div>
 
-      {/* Add Student Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
@@ -139,12 +153,21 @@ export default function StudentInfo() {
             </button>
             <h2 className="text-2xl font-semibold text-black mb-4">Add New Student</h2>
             <div className="space-y-4 text-black">
+              
               <input
                 type="text"
                 name="name"
                 value={newStudent.name}
                 onChange={handleChange}
                 placeholder="Name"
+                className="w-full p-2 border rounded"
+              />
+                <input
+                type="text"
+                name="studentNumber"
+                value={newStudent.studentNumber}
+                onChange={handleChange}
+                placeholder="Student Number"
                 className="w-full p-2 border rounded"
               />
               <input
@@ -156,12 +179,11 @@ export default function StudentInfo() {
                 className="w-full p-2 border rounded"
               />
               <input
-                type="number"
-                name="gpa"
-                value={newStudent.gpa}
+                type="password"
+                name="password"
+                value={newStudent.password}
                 onChange={handleChange}
-                step="0.1"
-                placeholder="GPA"
+                placeholder="Password"
                 className="w-full p-2 border rounded"
               />
               <input
