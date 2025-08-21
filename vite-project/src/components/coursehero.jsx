@@ -31,15 +31,14 @@ export default function CourseHero({ courses, onAdd, onManage }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <div key={course.id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg">
+          <div key={course.id} className="bg-white p-6 rounded-lg shadow hover:shadow-lg overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
                   <FaBookOpen className="text-purple-600 text-xl" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-lg font-semibold truncate">{course.name}</h2>
-                  <p className="text-sm text-slate-600 truncate">{course.teacher}</p>
+                  <h2 className="text-lg font-semibold text-black truncate">{course.name}</h2>
                 </div>
               </div>
               <span
@@ -53,16 +52,7 @@ export default function CourseHero({ courses, onAdd, onManage }) {
               </span>
             </div>
 
-            <div className="space-y-2 text-sm text-slate-600 mb-4">
-              <div className="flex items-center gap-2">
-                <FaUsers className="text-sm" />
-                <span>{course.students} students enrolled</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FaClock className="text-sm" />
-                <span>{course.schedule}</span>
-              </div>
-            </div>
+           
 
             <button
               onClick={() => onManage(course)}

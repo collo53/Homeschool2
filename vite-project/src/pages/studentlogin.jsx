@@ -10,21 +10,25 @@ function StudentLogin() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await Axios.post("http://127.0.0.1:8000/Hub/studentlogin/", {
-        RegNumber: text,
-        Password: password,
-      });
+  e.preventDefault();
+  try {
+    const response = await Axios.post("http://127.0.0.1:8000/Hub/studentlogin/", {
+      studentNumber: text,
+      Password: password,
+    });
 
-      console.log("Success:", response.data);
-      alert("User created successfully!");
-      navigate("/pages/studentmain")
-    } catch (error) {
-      console.error("Error:", error.response?.data || error.message);
-      alert("Login failed. Check console for details.");
-    }
-  };
+    console.log("Success:", response.data);
+    alert("User login successful!");
+    
+    localStorage.setItem("student", JSON.stringify(response.data.student));
+
+    navigate("/pages/studentmain");
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+    alert("Login failed. Check console for details.");
+  }
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-screen bg-gray-100">

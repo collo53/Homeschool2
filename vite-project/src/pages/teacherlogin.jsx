@@ -18,7 +18,9 @@ function TeacherLogin() {
       });
 
       console.log("Success:", response.data);
-      alert("User created successfully!");
+      alert("User login successfull!");
+      localStorage.setItem("teacher", JSON.stringify(response.data.teacher));
+
       navigate("/pages/teachermain")
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);

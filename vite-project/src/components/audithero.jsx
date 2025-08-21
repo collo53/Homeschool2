@@ -1,107 +1,32 @@
-import {
-  FaSearch,
-  FaShieldAlt,
-  FaClock,
-  FaUser,
-  FaFileAlt,
-} from  'react-icons/fa'
-import { Import } from 'lucide-react'
-import React from 'react'
-
-const auditLogs = [
-  {
-    id: 1,
-    action: "User Login",
-    user: "Principal Smith",
-    timestamp: "2024-11-15 14:30:25",
-    details: "Successful login from IP 192.168.1.100",
-    severity: "info",
-  },
-  {
-    id: 2,
-    action: "Student Record Modified",
-    user: "Ms. Johnson",
-    timestamp: "2024-11-15 13:45:12",
-    details: "Updated grade for Alex Thompson in Mathematics",
-    severity: "warning",
-  },
-  {
-    id: 3,
-    action: "Course Created",
-    user: "Dr. Wilson",
-    timestamp: "2024-11-15 12:20:08",
-    details: "Created new course: Advanced Physics Lab",
-    severity: "info",
-  },
-  {
-    id: 4,
-    action: "Failed Login Attempt",
-    user: "Unknown",
-    timestamp: "2024-11-15 11:15:33",
-    details: "Failed login attempt for user 'admin' from IP 203.45.67.89",
-    severity: "error",
-  },
-  {
-    id: 5,
-    action: "Report Generated",
-    user: "Principal Smith",
-    timestamp: "2024-11-15 10:30:44",
-    details: "Generated monthly academic performance report",
-    severity: "info",
-  },
-  {
-    id: 6,
-    action: "Permission Changed",
-    user: "System Admin",
-    timestamp: "2024-11-15 09:45:17",
-    details: "Updated permissions for teacher role",
-    severity: "warning",
-  },
-  {
-    id: 7,
-    action: "Data Export",
-    user: "Principal Smith",
-    timestamp: "2024-11-15 08:22:55",
-    details: "Exported student enrollment data",
-    severity: "info",
-  },
-  {
-    id: 8,
-    action: "System Backup",
-    user: "System",
-    timestamp: "2024-11-15 03:00:00",
-    details: "Automated daily backup completed successfully",
-    severity: "info",
-  },
-]
-
-const getSeverityColor = (severity) => {
-  switch (severity) {
-    case 'error':
-      return 'bg-red-100 text-red-800'
-    case 'warning':
-      return 'bg-yellow-100 text-yellow-800'
-    case 'info':
-      return 'bg-blue-100 text-blue-800'
-    default:
-      return 'bg-gray-100 text-gray-800'
-  }
-}
-
-const getSeverityIcon = (severity) => {
-  switch (severity) {
-    case 'error':
-      return '🚨'
-    case 'warning':
-      return '⚠️'
-    case 'info':
-      return 'ℹ️'
-    default:
-      return '📝'
-  }
-}
+import React, { useEffect, useState } from "react";
+import { FaSearch, FaShieldAlt, FaClock, FaUser, FaFileAlt } from "react-icons/fa";
 
 export default function AuditLogs() {
+  const [activities, setActivities] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/Hub/activities/");
+        const data = await response.json();
+        setActivities(data);
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+      }
+    };
+
+    fetchActivities();
+    const interval = setInterval(fetchActivities, 10000); // Refresh every 10 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const filteredActivities = activities.filter(
+    (activity) =>
+      activity.user.toLowerCase().includes(search.toLowerCase()) ||
+      activity.action.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -113,54 +38,39 @@ export default function AuditLogs() {
 
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-            <FaSearch className='mr-2'/>
+          <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
           <input
             type="text"
             placeholder="Search logs..."
             className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="bg-white border rounded-lg shadow-sm">
+      <div className="bg-white border rounded-lg shadow-sm p-4 h-[700px] overflow-y-auto">
         <div className="p-4 border-b flex items-center gap-2 text-lg font-semibold text-slate-900">
-            <FaShieldAlt className='mr-2'/>
-          System Activity Log
+          <FaShieldAlt className="mr-2" /> System Activity Log
         </div>
-        <div className="p-4 space-y-3">
-          {auditLogs.map((log) => (
-            <div key={log.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="text-lg">{getSeverityIcon(log.severity)}</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-slate-900">{log.action}</h3>
-                      <span className={`${getSeverityColor(log.severity)} text-xs px-2 py-0.5 rounded`}>
-                        {log.severity.toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-slate-600 mb-2">
-                      <div className="flex items-center gap-1">
-                            <FaUser className='mr-2'/>
-                        <span>{log.user}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                          <FaClock className='mr-2'/>
-                        <span>{log.timestamp}</span>
-                      </div>
-                    </div>
-                    <p className="text-sm text-slate-700">{log.details}</p>
-                  </div>
-                </div>
-                <div className="ml-4">
-                  <FaFileAlt className='mr-2'/>
-                </div>
+        <ul className="space-y-4 mt-4">
+          {filteredActivities.slice(0, 15).map((activity, index) => (
+            <li key={index} className="flex items-start space-x-3">
+              <div className="w-10 h-10 bg-blue-200 text-blue-800 flex items-center justify-center rounded-full font-bold text-lg">
+                {activity.user.charAt(0)}
               </div>
-            </div>
+              <div>
+                <p className="text-sm text-gray-700">
+                  <span className="font-medium">{activity.user}</span> {activity.action}
+                </p>
+                <span className="text-xs text-gray-500">
+                  {new Date(activity.timestamp).toLocaleString()}
+                </span>
+              </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
-  )
+  );
 }

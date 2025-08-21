@@ -3,6 +3,7 @@ import { FaPlus, FaUser, FaSearch, FaGraduationCap } from "react-icons/fa";
 import StudentProfileModal from "../components/StudentProfileModal";
 import axios from "axios";
 import { Await } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 
@@ -51,9 +52,9 @@ const handleAddStudent = async () => {
   };
   try {
     const response = await axios.post("http://127.0.0.1:8000/Hub/addstudent/", studentPayload);
-    console.log("Success:", response.data);
+      toast.success(" Student added successfully!");
   } catch (error) {
-    console.error("Error adding student", error);
+      toast.error(" Error adding student");
   }
 }
 
@@ -220,6 +221,8 @@ const handleAddStudent = async () => {
         <StudentProfileModal
           student={selectedStudent}
           onClose={() => setProfileModalOpen(false)}
+            setStudents={setStudents}   
+
           onAssignTeacher={handleAssignTeacher}
         />
       )}

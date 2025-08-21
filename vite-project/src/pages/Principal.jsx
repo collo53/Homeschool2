@@ -1,16 +1,24 @@
-import React, { useState } from "react";
+import React, { useState ,useContext} from "react";
 import AppSidebar from "../components/AppSidebar";
 import Toggle from "../components/toggle";
 import DashboardContent from "../components/DashboardContent";
 import DashboardInfo from "../components/DashboardInfo";
+import { AuthContext } from "../pages/AuthContext";
+import { Navigate } from "react-router-dom";  
 
 function Principal() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+    const { user } = useContext(AuthContext);
 
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+ 
+  if (!user) {
+    return <Navigate to="/pages/principallogin" replace />; // redirect if not logged in
+  }
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+ 
   return (
     <div className="w-screen min-h-screen flex bg-gray-100 relative overflow-hidden">
     

@@ -1,7 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlus, FaCalculator, FaCalendar, FaBullhorn } from "react-icons/fa";
 
 function DashboardInfo() {
+  const [activities, setActivities] = useState([]);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/Hub/activities/");
+        const data = await response.json();
+        setActivities(data);
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+      }
+    };
+
+    fetchActivities();
+    const interval = setInterval(fetchActivities, 10000); // Refresh every 10 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5">
@@ -38,15 +56,10 @@ function DashboardInfo() {
         </div>
 
         
-        <div className="col-span-1 md:col-span-2 xl:col-span-2 shadow-xl bg-white rounded-lg p-6 h-[700px] overflow-y-auto">
+     <div className="col-span-1 md:col-span-2 xl:col-span-2 shadow-xl bg-white rounded-lg p-6 h-[700px] overflow-y-auto">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">Recent Activity</h2>
           <ul className="space-y-4">
-            {[
-              { user: "John Doe", action: "added a new student", time: "5 mins ago" },
-              { user: "Jane Smith", action: "edited class details", time: "1 hour ago" },
-              { user: "Admin", action: "removed a student", time: "2 hours ago" },
-              { user: "Emily", action: "logged in", time: "Today, 9:30 AM" },
-            ].map((activity, index) => (
+            {activities.slice(0,15).map((activity, index) => (
               <li key={index} className="flex items-start space-x-3">
                 <div className="w-10 h-10 bg-blue-200 text-blue-800 flex items-center justify-center rounded-full font-bold text-lg">
                   {activity.user.charAt(0)}
@@ -55,7 +68,9 @@ function DashboardInfo() {
                   <p className="text-sm text-gray-700">
                     <span className="font-medium">{activity.user}</span> {activity.action}
                   </p>
-                  <span className="text-xs text-gray-500">{activity.time}</span>
+                  <span className="text-xs text-gray-500">
+                    {new Date(activity.timestamp).toLocaleString()}
+                  </span>
                 </div>
               </li>
             ))}

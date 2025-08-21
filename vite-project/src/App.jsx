@@ -1,9 +1,9 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import Home from './pages/home'; 
 import About from './pages/about'; 
 import Services from './pages/services';
-import './home.css'; 
 import Contact from './pages/contact';
 import Principal from './pages/Principal';
 import Teachers from './pages/teachers';
@@ -34,50 +34,53 @@ import StudentAccount from './pages/studentaccount';
 import PrincipalLogin from './pages/principallogin';
 import StudentLogin from './pages/studentlogin';
 import TeacherLogin from './pages/teacherlogin';
-
-
-
+import { AuthProvider } from "./pages/AuthContext"; 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/pages/about" element={<About />} />
-        <Route path="/pages/services" element={<Services />} />
-        <Route path="/pages/contact" element={<Contact />} />
-        <Route path="/pages/Principal" element={<Principal/>} />
-        <Route path="/pages/teachers" element={<Teachers/>} />
-        <Route path="/pages/students" element={<Students/>} />
-        <Route path="/pages/courses" element={<Courses/>} />
-        <Route path="/pages/reports" element={<Reports/>} />
-        <Route path="/pages/calendar" element={<Calendar/>} />
-        <Route path="/pages/messages" element={<Messages/>} />
-        <Route path="/pages/account" element={<Account/>} />
-        <Route path="/pages/audit" element={<Audit/>} />
-        <Route path="/pages/teachermain" element={<TeacherMain/>} />
-        <Route path="/pages/teacherclasses" element={<TeacherMainClasses/>} />
-        <Route path="/pages/teacherstudents" element={<TeacherStudents/>} />
-        <Route path="/pages/teacherassignments" element={<TeacherAssignments/>} />
-        <Route path="/pages/teachergrades" element={<TeacherGrades/>} />
-        <Route path="/pages/teachercalendar" element={<TeacherCalendar/>} />
-        <Route path="/pages/teachermessages" element={<TeacherMessages/>} />
-        <Route path="/pages/teachermeetings" element={<TeacherMeetings/>} />
-        <Route path="/pages/teacheraccount" element={<TeacherAccount/>} />
-        <Route path="/pages/studentmain" element={<StudentMain/>} />
-        <Route path="/pages/studentclass" element={<StudentClass/>} />
-        <Route path="/pages/studentlesson" element={<StudentLesson/>} />
-        <Route path="/pages/studentcalendar" element={<StudentCalendar/>} />
-        <Route path="/pages/studentgrades" element={<StudentGrades/>} />
-        <Route path="/pages/studentmeetings" element={<StudentMeetings/>} />
-        <Route path="/pages/studentmessages" element={<StudentMessages/>} />
-        <Route path="/pages/studentaccount" element={<StudentAccount/>} />
-        <Route path="/pages/principallogin" element={<PrincipalLogin />} />
-        <Route path="/pages/studentlogin" element={<StudentLogin />} />
-        <Route path="/pages/teacherlogin" element={<TeacherLogin />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/pages/about" element={<About />} />
+          <Route path="/pages/services" element={<Services />} />
+          <Route path="/pages/contact" element={<Contact />} />
+          <Route path="/pages/Principal" element={<Principal />} />
+          <Route path="/pages/teachers" element={<Teachers />} />
+          <Route path="/pages/students" element={<Students />} />
+          <Route path="/pages/courses" element={<Courses />} />
+          <Route path="/pages/reports" element={<Reports />} />
+          <Route path="/pages/calendar" element={<Calendar />} />
+          <Route path="/pages/messages" element={<Messages />} />
+          <Route path="/pages/account" element={<Account />} />
+          <Route path="/pages/audit" element={<Audit />} />
+          <Route path="/pages/teachermain" element={<TeacherMain />} />
+          <Route path="/pages/teacherclasses" element={<TeacherMainClasses />} />
+          <Route path="/pages/teacherstudents" element={<TeacherStudents />} />
+          <Route path="/pages/teacherassignments" element={<TeacherAssignments />} />
+          <Route path="/pages/teachergrades" element={<TeacherGrades />} />
+          <Route path="/pages/teachercalendar" element={<TeacherCalendar />} />
+          <Route path="/pages/teachermessages" element={<TeacherMessages />} />
+          <Route path="/pages/teachermeetings" element={<TeacherMeetings />} />
+          <Route path="/pages/teacheraccount" element={<TeacherAccount />} />
+          <Route path="/pages/studentmain" element={<StudentMain />} />
+          <Route path="/pages/studentclass" element={<StudentClass />} />
+          <Route path="/pages/studentlesson" element={<StudentLesson />} />
+          <Route path="/pages/studentcalendar" element={<StudentCalendar />} />
+          <Route path="/pages/studentgrades" element={<StudentGrades />} />
+          <Route path="/pages/studentmeetings" element={<StudentMeetings />} />
+          <Route path="/pages/studentmessages" element={<StudentMessages />} />
+          <Route path="/pages/studentaccount" element={<StudentAccount />} />
+          <Route path="/pages/principallogin" element={<PrincipalLogin />} />
+          <Route path="/pages/studentlogin" element={<StudentLogin />} />
+          <Route path="/pages/teacherlogin" element={<TeacherLogin />} />
+        </Routes>
 
-      </Routes>
-    </Router>
+        <ToastContainer position="top-right" autoClose={3000} />
+      </Router>
+    </AuthProvider>
   );
 }
 

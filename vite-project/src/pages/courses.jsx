@@ -4,83 +4,122 @@ import AppSidebar from "../components/AppSidebar";
 import Toggle from "../components/toggle";
 import CourseHero from "../components/coursehero";
 import axios from "axios";
+import { toast } from "react-toastify";
+
 
 function Courses() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [courses, setCourses] = useState([
-    { id: 1, name: "Advanced Mathematics", teacher: "Dr. Sarah Wilson", students: 24, schedule: "Mon, Wed, Fri 9:00 AM", status: "Active" },
-    { id: 2, name: "Physics Lab", teacher: "Prof. Michael Brown", students: 18, schedule: "Tue, Thu 2:00 PM", status: "Active" },
-    { id: 3, name: "English Literature", teacher: "Ms. Emily Davis", students: 28, schedule: "Mon, Wed, Fri 11:00 AM", status: "On Hold" },
-  ]);
-
+  const [courses, setCourses] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
-  const [formData, setFormData] = useState({ 
-    name: "", teacher: "", students: 0, schedule: "", status: "Active" 
+  const [formData, setFormData] = useState({
+    name: "",
+    status: "Active"
   });
 
-useEffect(() => {
-  const fetchCourses = async () => {
+ useEffect(() => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
-      const normalizedCourses = response.data.map((c, index) => ({
-        id: index + 1, 
+      const courseRes = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
+      const normalizedCourses = courseRes.data.map((c) => ({
+        id: c.id, 
         name: c.Name,
-        teacher: c.Teacher,
-        students: c.Students,
-        schedule: c.Schedule,
         status: c.Status,
       }));
       setCourses(normalizedCourses);
+      console.log("Courses:", normalizedCourses);
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      console.error("Error loading courses:", error);
     }
   };
-  fetchCourses();
+  fetchData();
 }, []);
-
 
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const handleAdd = async () => {
-  const newCourse = {
-    Name: formData.name,
-    Teacher: formData.teacher,
-    Students: formData.students,
-    Schedule: formData.schedule,
-    Status: formData.status,
+    const newCourse = {
+      Name: formData.name,
+      Status: formData.status,
+    };
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/Hub/addcourse/", newCourse);
+      console.log("Add response:", response.data);
+
+      const updatedCourses = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
+      const normalizedCourses = updatedCourses.data.map((c, index) => ({
+        id: index + 1,
+        name: c.Name,
+        status: c.Status,
+      }));
+      setCourses(normalizedCourses);
+            toast.success(" Course added successfully!");
+
+    } catch (error) {
+      console.error("Error adding course", error);
+            toast.error(" Failed to add course");
+
+    }
+
+    setShowAddModal(false);
   };
 
+  const handleUpdate = async () => {
   try {
-    await axios.post("http://127.0.0.1:8000/Hub/addcourse/", newCourse);
-    const response = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
-    const normalizedCourses = response.data.map((c, index) => ({
-      id: index + 1,
+    const updatedCourse = {
+      Name: formData.name,
+      Status: formData.status,
+    };
+
+    await axios.put(
+      `http://127.0.0.1:8000/Hub/updatecourse/${editingCourse.id}/`,
+      updatedCourse
+    );
+
+    // Refresh courses after update
+    const updatedCourses = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
+    const normalizedCourses = updatedCourses.data.map((c) => ({
+      id: c.id, // keep DB id
       name: c.Name,
-      teacher: c.Teacher,
-      students: c.Students,
-      schedule: c.Schedule,
       status: c.Status,
     }));
     setCourses(normalizedCourses);
-  } catch (error) {
-    console.error("Error adding course", error);
-  }
+      toast.success(" Course updated successfully!");
 
-  setShowAddModal(false);
+    setEditingCourse(null);
+    setShowAddModal(false);
+  } catch (error) {
+    console.error("Error updating course", error);
+      toast.error(" Failed to update course");
+
+  }
 };
 
-  const handleUpdate = () => {
-    const updated = courses.map(c => c.id === editingCourse.id ? { ...formData, id: c.id } : c);
-    setCourses(updated);
-    setEditingCourse(null);
-  };
+const handleDelete = async (id) => {
+  try {
+    await axios.delete(`http://127.0.0.1:8000/Hub/deletecourse/${id}/`);
 
-  const handleDelete = (id) => {
-    setCourses(courses.filter(c => c.id !== id));
+    const updatedCourses = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
+    const normalizedCourses = updatedCourses.data.map((c) => ({
+      id: c.id, 
+      name: c.Name,
+      status: c.Status,
+    }));
+    setCourses(normalizedCourses);
+    toast.success(" Course deleted successfully!");
+
     setEditingCourse(null);
-  };
+    setShowAddModal(false);
+  } catch (error) {
+    console.error("Error deleting course", error);
+    toast.error(" Failed to delete course");
+
+  }
+};
+
+
 
   return (
     <div className="w-screen min-h-screen flex bg-gray-100 relative overflow-hidden">
@@ -101,17 +140,22 @@ useEffect(() => {
             onAdd={() => setShowAddModal(true)}
             onManage={(course) => {
               setEditingCourse(course);
-              setFormData(course);
+              setFormData({
+                name: course.name,
+                status: course.status
+              });
             }}
           />
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
       {(showAddModal || editingCourse) && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded w-full max-w-md">
-            <h2 className="text-2xl font-semibold mb-4 text-black text-center">Add Course</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-black text-center">
+              {editingCourse ? "Edit Course" : "Add Course"}
+            </h2>
+
             <input
               type="text"
               name="name"
@@ -120,32 +164,9 @@ useEffect(() => {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
-            <input
-              type="text"
-              name="teacher"
-              className="w-full mb-2 p-2 border rounded text-black"
-              placeholder="Teacher Name"
-              value={formData.teacher}
-              onChange={(e) => setFormData({ ...formData, teacher: e.target.value })}
-            />
-            <input
-              type="number"
-              name="students"
-              className="w-full mb-2 p-2 border rounded text-black"
-              placeholder="Students"
-              value={formData.students}
-              onChange={(e) => setFormData({ ...formData, students: parseInt(e.target.value) })}
-            />
-            <input
-              type="date"
-              name="schedule"
-              className="w-full mb-2 p-2 border rounded text-black"
-              placeholder="Schedule"
-              value={formData.schedule}
-              onChange={(e) => setFormData({ ...formData, schedule: e.target.value })}
-            />
+
             <select
-            name="status"
+              name="status"
               className="w-full mb-4 p-2 border rounded text-black"
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -154,13 +175,22 @@ useEffect(() => {
               <option value="On Hold">On Hold</option>
             </select>
 
-            <div className="flex justify-end gap-2 text-black" >
+            <div className="flex justify-end gap-2 text-black">
               {editingCourse && (
-                <button onClick={() => handleDelete(editingCourse.id)} className="bg-red-600 text-white px-4 py-2 rounded">
+                <button
+                  onClick={() => handleDelete(editingCourse.id)}
+                  className="bg-red-600 text-white px-4 py-2 rounded"
+                >
                   Delete
                 </button>
               )}
-              <button onClick={() => { setShowAddModal(false); setEditingCourse(null); }} className="bg-gray-400 text-white px-4 py-2 rounded">
+              <button
+                onClick={() => {
+                  setShowAddModal(false);
+                  setEditingCourse(null);
+                }}
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+              >
                 Cancel
               </button>
               <button

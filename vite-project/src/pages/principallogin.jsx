@@ -1,28 +1,32 @@
-import React, { useState } from "react";
+import React, { useState ,useContext} from "react";
 import Axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
-
-
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../pages/AuthContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function PrincipalLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await Axios.post("http://127.0.0.1:8000/Hub/principallogin/", {
-        EmailName: email,
+        Email: email,
         Password: password,
       });
+      
+      setUser(response.data.user); 
 
       console.log("Success:", response.data);
-      alert("User created successfully!");
-      navigate("/pages/principal")
+      toast.success("Login successful! ");
+      navigate("/pages/principal");
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
-      alert("Login failed. Check console for details.");
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 
@@ -30,8 +34,6 @@ function PrincipalLogin() {
     <div className="flex flex-col items-center justify-center min-h-screen w-screen bg-gray-100">
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          
-          
           <h2 className="mt-10 text-center text-3xl/9 font-bold tracking-tight text-[#ffc01d]">
             Sign in to your account
           </h2> 
@@ -44,7 +46,7 @@ function PrincipalLogin() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
-                Email address
+                Email
               </label>
               <div className="mt-4">
                 <input
@@ -87,8 +89,6 @@ function PrincipalLogin() {
               </button>
             </div>
           </form>
-
-         
         </div>
       </div>
     </div>

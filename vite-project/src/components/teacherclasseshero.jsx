@@ -1,45 +1,46 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { FaBookOpen, FaUsers, FaCalendarAlt } from 'react-icons/fa';
 
-const classes = [
-  { 
-    id: 1, 
-    name: "Algebra II", 
-    period: "1st Period", 
-    time: "9:00 AM - 9:50 AM",
-    room: "Room 201",
-    students: 28,
-    status: "Active"
-  },
-  { 
-    id: 2, 
-    name: "Calculus", 
-    period: "3rd Period", 
-    time: "11:00 AM - 11:50 AM",
-    room: "Room 203",
-    students: 22,
-    status: "Active"
-  },
-  { 
-    id: 3, 
-    name: "Statistics", 
-    period: "6th Period", 
-    time: "2:00 PM - 2:50 PM",
-    room: "Room 201",
-    students: 25,
-    status: "Active"
-  },
-  { 
-    id: 4, 
-    name: "AP Calculus BC", 
-    period: "7th Period", 
-    time: "3:00 PM - 3:50 PM",
-    room: "Room 203",
-    students: 18,
-    status: "Active"
-  },
-];
-
 export default function TeacherClassesHero() {
+  const [classes, setClasses] = useState([]);
+
+  useEffect(() => {
+  const fetchCourses = async () => {
+    const teacher = JSON.parse(localStorage.getItem("teacher"));
+    const teacherId = teacher?.id;
+
+    if (!teacherId) {
+      console.error("Teacher ID not found in localStorage.");
+      return;
+    }
+
+    try {
+      const res = await axios.get(`http://127.0.0.1:8000/Hub/getteachercoursesbyid/${teacherId}/`);
+      const courses = res.data.courses;
+
+      const courseList = courses.map((course, idx) => ({
+        id: idx + 1,
+        name: course.Name || "Unnamed Course",
+        period: "To be defined",
+        time: course.Schedule ? new Date(course.Schedule).toLocaleDateString() : "N/A",
+        room: "To be assigned",
+        students: course.Students ? course.Students.split(',').filter(Boolean).length : 0,
+        status: course.Status || "Pending"
+      }));
+
+        console.log("Courses response:", res.data);
+
+      setClasses(courseList);
+    } catch (err) {
+      console.error("Failed to load teacher courses", err);
+    }
+  };
+
+  fetchCourses();
+}, []);
+
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">

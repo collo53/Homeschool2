@@ -1,12 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-function StudentProfileModal({ student, onClose, onAssignTeacher }) {
-  const [teacherName, setTeacherName] = useState(student.assignedTeacher || "");
 
-  const handleSave = () => {
-    onAssignTeacher(student.id, teacherName);
+function StudentProfileModal({ student, onClose, setStudents }) {
+  const [teacherName, setTeacherName] = useState("");
+
+ useEffect(() => {
+  if (!student || !student.id) return;
+
+  axios
+    .get(`http://127.0.0.1:8000/Hub/getteacherforstudent/${student.id}/`)
+    .then((res) => {
+      setTeacherName(res.data.teacher || "None");
+    })
+    .catch(() => setTeacherName("Error loading teacher"));
+}, [student]);
+
+
+
+const handleDeleteStudent = async () => {
+  if (!student?.id) {
+    alert("No student selected");
+    return;
+  }
+
+  try {
+    await axios.delete(`http://127.0.0.1:8000/Hub/delete-student/${student.id}/`);
+
+    const updated = await axios.get("http://127.0.0.1:8000/Hub/getstudents/");
+    setStudents(updated.data);
+
+      toast.success(" Student deleted successfully!");
     onClose();
-  };
+  } catch (error) {
+    console.error("Delete error:", error.response?.data || error.message);
+      toast.error(" Error deleting student");
+  }
+};
+
+
+
+
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -17,33 +53,25 @@ function StudentProfileModal({ student, onClose, onAssignTeacher }) {
         >
           &times;
         </button>
+
         <h2 className="text-2xl font-semibold mb-4 text-black">Student Profile</h2>
+
         <div className="space-y-2 text-black">
           <p><strong>Name:</strong> {student.name}</p>
           <p><strong>Grade:</strong> {student.grade}</p>
-          <p><strong>GPA:</strong> {student.gpa}</p>
           <p><strong>Status:</strong> {student.status}</p>
           <p><strong>Courses:</strong> {student.courses}</p>
-          <p><strong>Assigned Teacher:</strong> {student.assignedTeacher || "None"}</p>
+          <p><strong>Assigned Teacher:</strong> {teacherName}</p>
         </div>
 
-        <div className="mt-4">
-          <label className="block text-black mb-1">Assign Teacher</label>
-          <input
-            type="text"
-            value={teacherName}
-            onChange={(e) => setTeacherName(e.target.value)}
-            className="w-full p-2 border rounded text-black"
-            placeholder="Enter teacher name..."
-          />
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={handleDeleteStudent}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Delete Student
+          </button>
         </div>
-
-        <button
-          onClick={handleSave}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Save
-        </button>
       </div>
     </div>
   );

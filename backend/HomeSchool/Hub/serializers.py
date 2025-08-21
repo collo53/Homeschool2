@@ -8,20 +8,45 @@ class PrincipalLoginSerializer(serializers.ModelSerializer):
 class StudentTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentTable
-        fields = ["name", "grade", "studentNumber", "Password", "status", "courses"]
+        fields = '__all__'  
 
 class TeacherTableSerializer(serializers.ModelSerializer):
+    students = serializers.SerializerMethodField() 
+
     class Meta:
         model = TeacherDetails
-        fields = ["Name", "Email", "Phone", "ID_number", "TeacherNumber", "Password", "Unit", "Grade", "DateHired"] 
+        fields = '__all__'  
+
+    def get_students(self, obj):
+        return [s.name for s in obj.students.all()]  
 
 class CourseTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseTable
-        fields = ["Name", "Teacher", "Students", "Schedule", "Status"]
+        fields = '__all__'  
 
 class EventTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventTable
         fields = ["Title", "Date", "Time", "Location", "Type"]
         
+class MessageTableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MessageTable
+        fields = ["Sender", "Receiver", "Subject", "Message", "DateSent", "Status"]
+
+class AssignedStudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+
+class AssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = '__all__'
+
+class ActivityLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivityLog
+        fields = '__all__'
