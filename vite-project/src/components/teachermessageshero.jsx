@@ -8,13 +8,13 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import ComposeMessageModal from "../components/ComposeMessageModal";
+import { toast } from "react-toastify";
 
 export default function TeachersMessagesHero() {
   const [messages, setMessages] = useState([]);
   const [recentContacts, setRecentContacts] = useState([]);
   const [showCompose, setShowCompose] = useState(false);
-
-  const formatPriority = (status) => status.toLowerCase();
+  const [selectedMessage, setSelectedMessage] = useState(null); // for viewing
 
   const sortMessagesByPriority = (messages) => {
     const priorityOrder = { high: 1, moderate: 2, low: 3 };
@@ -23,47 +23,74 @@ export default function TeachersMessagesHero() {
     );
   };
 
-  const generateRecentContacts = (msgs) => {
-    const uniqueMap = new Map();
+const generateRecentContacts = (msgs) => {
+  const uniqueMap = new Map();
 
-    msgs.forEach((msg) => {
-      const name = msg.Receiver || msg.receiver || "Unknown";
-      if (!uniqueMap.has(name)) {
-        uniqueMap.set(name, {
-          name,
-          lastContact: new Date(msg.DateSent).toLocaleString(),
-        });
-      }
-    });
-
-    return Array.from(uniqueMap.values());
-  };
-
-  const fetchMessages = async () => {
-    try {
-      const response = await axios.get("http://127.0.0.1:8000/Hub/getmessages/");
-      const formatted = response.data.map((msg) => ({
-        id: msg.id || Date.now(),
-        from: msg.Sender,
-        receiver: msg.Receiver,
-        subject: msg.Subject,
-        preview: msg.Message,
-        time: new Date(msg.DateSent).toLocaleString(),
-        unread: true,
-        priority: formatPriority(msg.Status),
-        DateSent: msg.DateSent,
-      }));
-
-      setMessages(sortMessagesByPriority(formatted));
-      setRecentContacts(generateRecentContacts(response.data));
-    } catch (err) {
-      console.error("Error fetching messages", err);
+  msgs.forEach((msg) => {
+    const name = msg.Sender || msg.from || "Unknown"; // 👈 use Sender instead of Receiver
+    if (!uniqueMap.has(name)) {
+      uniqueMap.set(name, {
+        name,
+        lastContact: msg.DateSent
+          ? new Date(msg.DateSent).toLocaleString()
+          : "Unknown date",
+      });
     }
-  };
+  });
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
+  return Array.from(uniqueMap.values());
+};
+
+
+const fetchMessages = async () => {
+  try {
+    const loggedInUser = JSON.parse(localStorage.getItem("teacher"));
+    if (!loggedInUser) {
+      console.warn("No logged in user found");
+      return;
+    }
+
+    const teacherNumber = loggedInUser.TeacherNumber;
+
+    if (!teacherNumber) {
+      console.warn("No TeacherNumber found for logged in user:", loggedInUser);
+      return;
+    }
+
+    const response = await axios.get("http://127.0.0.1:8000/Hub/getmessages/");
+    console.log("Raw API data:", response.data);
+
+    const filtered = response.data.filter(
+      (msg) => msg.Sender === teacherNumber || msg.Receiver === teacherNumber
+    );
+
+    const formatted = filtered.map((msg) => ({
+      id: msg.id,
+      from: msg.Sender,
+      receiver: msg.Receiver,
+      subject: msg.Subject,
+      preview: msg.Message ? msg.Message.slice(0, 40) + "..." : "",
+      fullMessage: msg.Message,
+      time: msg.DateSent
+        ? new Date(msg.DateSent).toLocaleString()
+        : "Unknown date",
+      unread: msg.Status?.toUpperCase() === "UNREAD",
+      priority: msg.Status ? msg.Status.toLowerCase() : "normal",
+      DateSent: msg.DateSent,
+    }));
+
+    setMessages(sortMessagesByPriority(formatted));
+    setRecentContacts(generateRecentContacts(filtered));
+  } catch (err) {
+    console.error("Error fetching messages", err);
+  }
+};
+
+useEffect(() => {
+  fetchMessages();
+}, []);
+
+
 
   const handleSendMessage = (newMsg) => {
     const message = {
@@ -72,6 +99,7 @@ export default function TeachersMessagesHero() {
       receiver: newMsg.recipient,
       subject: newMsg.subject,
       preview: newMsg.message,
+      fullMessage: newMsg.message,
       time: "Just now",
       unread: true,
       priority: newMsg.priority.toLowerCase(),
@@ -89,11 +117,12 @@ export default function TeachersMessagesHero() {
       }
       return prev;
     });
+    toast.success("Message sent successfully!");
   };
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Messages</h1>
           <p className="text-slate-600 mt-1">
@@ -122,7 +151,7 @@ export default function TeachersMessagesHero() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <div className="bg-white border rounded-lg shadow-sm">
+          <div className="bg-white border rounded-lg shadow-sm ">
             <div className="p-4 border-b flex items-center gap-2 text-slate-700 font-semibold text-lg">
               <FaEnvelope />
               Inbox
@@ -131,6 +160,7 @@ export default function TeachersMessagesHero() {
               {messages.map((message) => (
                 <div
                   key={message.id}
+                  onClick={() => setSelectedMessage(message)} 
                   className={`p-4 rounded-lg border cursor-pointer hover:shadow-md transition-all ${
                     message.unread
                       ? "bg-blue-50 border-blue-200"
@@ -225,6 +255,27 @@ export default function TeachersMessagesHero() {
           onClose={() => setShowCompose(false)}
           onSend={handleSendMessage}
         />
+      )}
+
+      {selectedMessage && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative">
+            <button
+              onClick={() => setSelectedMessage(null)}
+              className="absolute top-3 right-3 text-slate-500 hover:text-slate-700"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-bold mb-2">{selectedMessage.subject}</h2>
+            <p className="text-sm text-slate-500 mb-4">
+              From: {selectedMessage.from} | To: {selectedMessage.receiver}
+            </p>
+            <p className="text-slate-700 whitespace-pre-line">
+              {selectedMessage.fullMessage}
+            </p>
+            <p className="mt-4 text-xs text-slate-500">{selectedMessage.time}</p>
+          </div>
+        </div>
       )}
     </div>
   );

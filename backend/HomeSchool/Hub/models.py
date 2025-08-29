@@ -45,6 +45,7 @@ class MessageTable(models.Model):
     DateSent = models.DateTimeField(auto_now_add=True)
     Status = models.CharField(max_length=255)
 
+
 class Student(models.Model):
     name = models.CharField(max_length=255)
     teacher = models.ForeignKey(TeacherDetails, on_delete=models.CASCADE, related_name="students")
@@ -57,10 +58,22 @@ class Assignment(models.Model):
     submitted = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
     file = models.FileField(upload_to='assignments/', blank=True, null=True)
+    teacher = models.ForeignKey(TeacherDetails, on_delete=models.CASCADE, related_name="assignments",null=True, blank=True)
+    students = models.ManyToManyField(Student, blank=True, related_name="assignments")
 
     def __str__(self):
         return self.title
-    
+
+class Submission(models.Model):
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name="submissions")
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="submissions")
+    file = models.FileField(upload_to="submissions/")
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    grade = models.CharField(max_length=10, blank=True, null=True)  
+
+    def __str__(self):
+        return f"{self.student.name} → {self.assignment.title}"
+
 
 
 class ActivityLog(models.Model):
@@ -70,4 +83,57 @@ class ActivityLog(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.action} ({self.timestamp})"
-# Create your models here.
+
+
+class LessonSchedule(models.Model):
+    teacher = models.ForeignKey(
+        TeacherDetails, 
+        on_delete=models.CASCADE, 
+        related_name="lessons"
+    )
+    unit = models.CharField(max_length=255)
+
+    DAYS_OF_WEEK = [
+        ("Monday", "Monday"),
+        ("Tuesday", "Tuesday"),
+        ("Wednesday", "Wednesday"),
+        ("Thursday", "Thursday"),
+        ("Friday", "Friday"),
+        ("Saturday", "Saturday"),
+        ("Sunday", "Sunday"),
+    ]
+    day = models.CharField(max_length=9, choices=DAYS_OF_WEEK)  
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    is_completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.unit} - {self.teacher.Name} on {self.day} ({self.start_time} - {self.end_time})"
+
+
+class Meeting(models.Model):
+    STATUS_CHOICES = [
+        ("scheduled", "Scheduled"),
+        ("ongoing", "Ongoing"),
+        ("completed", "Completed"),
+        ("cancelled", "Cancelled"),
+    ]
+
+    teacher = models.ForeignKey(
+        TeacherDetails,
+        on_delete=models.CASCADE,
+        related_name="meetings"
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    date = models.DateField()
+    time = models.TimeField()
+    duration = models.IntegerField(help_text="Duration in minutes")
+    grade = models.CharField(max_length=50, help_text="Grade level for this meeting")
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="scheduled")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.date} {self.time}) - Grade {self.grade}"

@@ -10,5 +10,7 @@ admin.site.register(MessageTable)
 admin.site.register(Student)
 admin.site.register(Assignment)
 admin.site.register(ActivityLog)
+admin.site.register(LessonSchedule)
+admin.site.register(Meeting)
 
 # Register your models here.

@@ -62,19 +62,10 @@ export default function TeacherStudentsHero({ teacher }) {
             </div>
 
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-600">Class:</span>
-                <span className="font-medium">{student.courses || "N/A"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">Student #:</span>
-                <span className="font-medium">{student.studentNumber || "N/A"}</span>
-              </div>
+             
             </div>
 
-            <button className="mt-4 w-full text-black text-sm px-4 py-2 border border-slate-300 bg-[#ffc01d] hover:text-white rounded-md hover:bg-black">
-              View Details
-            </button>
+           
           </div>
         )) : (
           <p className="text-gray-500">No students assigned yet.</p>

@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view, parser_classes
+from rest_framework.decorators import api_view, parser_classes,permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -10,12 +10,19 @@ from django.shortcuts import get_object_or_404
 import json
 from django.views import View
 from .models import *
-from .serializers import PrincipalLoginSerializer, StudentTableSerializer, TeacherTableSerializer,CourseTableSerializer,EventTableSerializer, MessageTableSerializer,AssignedStudentSerializer,AssignmentSerializer, ActivityLogSerializer
+from .serializers import PrincipalLoginSerializer, StudentTableSerializer, TeacherTableSerializer,CourseTableSerializer,EventTableSerializer, MessageTableSerializer,AssignedStudentSerializer,AssignmentSerializer, ActivityLogSerializer, LessonScheduleSerializer, SubmissionSerializer,MeetingSerializer
 from django.contrib.auth.hashers import make_password,check_password
 from django.db.models import Q
 from django.http import JsonResponse ,Http404
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, get_user_model
+from rest_framework import generics, permissions
+from django.db.models import F,OuterRef, Subquery
+from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.http import require_http_methods
+from django.utils.timezone import now
+from datetime import datetime
+
 
 
 User = get_user_model()
@@ -26,14 +33,13 @@ class PrincipalLogin(APIView):
         password = request.data.get("Password")
 
         if not email or not password:
-            return Response({"message": "Missing credentials"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": " Missing credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user_obj = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({"message": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Authenticate still needs username internally
         user = authenticate(request, username=user_obj.username, password=password)
 
         if user is not None and user.is_superuser:
@@ -134,7 +140,7 @@ def AddStudent(request):
 
     serializer = StudentTableSerializer(data=data)
     if serializer.is_valid():
-        serializer.save()  # don't pass password separately, it's already in `data`
+        serializer.save()  
         log_activity(user="System", action="Student added to system")
         return Response({
             "message": "Student added successfully",
@@ -208,7 +214,7 @@ class UpdateEmail(APIView):
         try:
             user = User.objects.get(email=old_email)
             user.email = new_email
-            user.username = new_email  # ✅ important: keep username in sync with email
+            user.username = new_email 
             user.save()
             return Response({"message": "Email updated successfully"}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
@@ -274,20 +280,28 @@ def assign_students(request):
 def get_students_for_teacher(request, teacher_id):
     try:
         teacher = TeacherDetails.objects.get(id=teacher_id)
-        students = Student.objects.filter(teacher=teacher)
-        serializer = AssignedStudentSerializer(students, many=True)
-        print("Students for teacher:", serializer.data) 
-        return Response(serializer.data)
     except TeacherDetails.DoesNotExist:
         return Response({"error": "Teacher not found"}, status=404)
 
-@api_view(['GET', 'POST'])
+    student_details = Student.objects.filter(teacher=teacher).annotate(
+        grade=Subquery(StudentTable.objects.filter(name=OuterRef('name')).values('grade')[:1]),
+        studentNumber=Subquery(StudentTable.objects.filter(name=OuterRef('name')).values('studentNumber')[:1]),
+        courses=Subquery(StudentTable.objects.filter(name=OuterRef('name')).values('courses')[:1]),
+    ).values('id', 'name', 'grade', 'studentNumber', 'courses')
+
+    return Response(list(student_details))
+
+@api_view(['GET', 'POST', 'PUT'])
 @parser_classes([MultiPartParser, FormParser])  
-def assignment_list(request):
+def assignment_list(request, teacher_id=None, assignment_id=None):
     if request.method == 'GET':
-        assignments = Assignment.objects.all().order_by('-id')
+        if teacher_id:
+            assignments = Assignment.objects.filter(teacher__id=teacher_id).order_by('-id')
+        else:
+            assignments = Assignment.objects.all().order_by('-id')
+        
         serializer = AssignmentSerializer(assignments, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
         serializer = AssignmentSerializer(data=request.data)
@@ -295,7 +309,29 @@ def assignment_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET', 'PUT', 'DELETE'])
+@parser_classes([MultiPartParser, FormParser])  
+def assignment_detail(request, pk):
+    try:
+        assignment = Assignment.objects.get(pk=pk)
+    except Assignment.DoesNotExist:
+        return Response({"error": "Assignment not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    if request.method == 'GET':
+        serializer = AssignmentSerializer(assignment)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = AssignmentSerializer(assignment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        assignment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 @api_view(['GET'])
 def get_stats(request):
     data = {
@@ -404,3 +440,282 @@ def DeleteCourse(request, pk):
 
     course.delete()
     return Response({"message": "Course deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+def AddCourseSchedule(request):
+    serializer = LessonScheduleSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        log_activity(user="System", action="Teacher  added schedule  to system")
+        return Response({"message": "Schedule added successfully", "data": serializer.data}, status=status.HTTP_201_CREATED)
+    return Response({"message": "Invalid data", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def GetTeacherLessons(request, teacher_id):
+    try:
+        lessons = LessonSchedule.objects.filter(teacher_id=teacher_id)
+        serializer = LessonScheduleSerializer(lessons, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(["PUT"])
+def update_lesson(request, lesson_id):
+    try:
+        lesson = LessonSchedule.objects.get(id=lesson_id)
+    except LessonSchedule.DoesNotExist:
+        return Response({"error": "Lesson not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = LessonScheduleSerializer(lesson, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+
+        teacher_name = lesson.teacher.Name if lesson.teacher else "Unknown Teacher"
+        unit_name = lesson.unit
+        log_activity(
+            user=request.user.username if request.user.is_authenticated else "System",
+            action=f"Teacher {teacher_name} updated lesson '{unit_name}' on {lesson.day}"
+        )
+
+        return Response(
+            {"message": "Lesson updated successfully", "data": serializer.data},
+            status=status.HTTP_200_OK
+        )
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+def submit_assignment(request, assignment_id, student_id):
+    try:
+        assignment = Assignment.objects.get(id=assignment_id)
+        student = Student.objects.get(id=student_id)
+    except (Assignment.DoesNotExist, Student.DoesNotExist):
+        return Response({"error": "Assignment or Student not found"}, status=404)
+
+    serializer = SubmissionSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(assignment=assignment, student=student)
+        assignment.submitted = assignment.submissions.count()
+        assignment.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+def get_submissions(request, assignment_id):
+    try:
+        assignment = Assignment.objects.get(id=assignment_id)
+    except Assignment.DoesNotExist:
+        return Response({"error": "Assignment not found"}, status=404)
+
+    submissions = assignment.submissions.all()
+    serializer = SubmissionSerializer(submissions, many=True)
+    return Response(serializer.data)
+@api_view(["POST"])
+def create_meeting(request):
+    teacher_id = request.data.get("teacher")
+    if not teacher_id:
+        return Response({"error": "Teacher ID is required"}, status=400)
+
+    try:
+        teacher = TeacherDetails.objects.get(id=teacher_id)
+    except TeacherDetails.DoesNotExist:
+        return Response({"error": "Teacher not found"}, status=404)
+
+    serializer = MeetingSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(teacher=teacher)  # attach teacher from ID
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def list_meetings(request):
+    teacher_id = request.query_params.get("teacher")
+    if not teacher_id:
+        return Response({"error": "Teacher ID is required"}, status=400)
+
+    try:
+        teacher = TeacherDetails.objects.get(id=teacher_id)
+    except TeacherDetails.DoesNotExist:
+        return Response({"error": "Teacher not found"}, status=404)
+
+    meetings = Meeting.objects.filter(teacher=teacher).order_by("-created_at")
+    serializer = MeetingSerializer(meetings, many=True)
+    return Response(serializer.data)
+
+
+@csrf_exempt
+@require_http_methods(["PUT"])
+def update_meeting(request, pk):
+    try:
+        meeting = Meeting.objects.get(pk=pk)
+    except Meeting.DoesNotExist:
+        return JsonResponse({"error": "Meeting not found"}, status=404)
+
+    data = json.loads(request.body)
+    meeting.title = data.get("title", meeting.title)
+    meeting.description = data.get("description", meeting.description)
+    meeting.date = data.get("date", meeting.date)
+    meeting.time = data.get("time", meeting.time)
+    meeting.duration = data.get("duration", meeting.duration)
+    meeting.grade = data.get("grade", meeting.grade)
+    meeting.status = data.get("status", meeting.status)
+    meeting.save()
+
+    return JsonResponse({
+        "id": meeting.id,
+        "title": meeting.title,
+        "description": meeting.description,
+        "date": meeting.date,
+        "time": meeting.time,
+        "duration": meeting.duration,
+        "grade": meeting.grade,
+        "status": meeting.status,
+        "teacher": meeting.teacher.id,
+    })
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def delete_meeting(request, pk):
+    try:
+        meeting = Meeting.objects.get(pk=pk)
+        meeting.delete()
+        return JsonResponse({"message": "Meeting deleted successfully"}, status=200)
+    except Meeting.DoesNotExist:
+        return JsonResponse({"error": "Meeting not found"}, status=404)  
+    
+@csrf_exempt
+def change_teacher_password(request, teacher_id):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            current_password = data.get("current_password")
+            new_password = data.get("new_password")
+
+            teacher = TeacherDetails.objects.get(id=teacher_id)
+
+            if not check_password(current_password, teacher.Password):
+                return JsonResponse({"error": "Current password is incorrect"}, status=400)
+
+            teacher.Password = make_password(new_password)
+            teacher.save()
+
+            return JsonResponse({"message": "Password updated successfully!"})
+
+        except TeacherDetails.DoesNotExist:
+            return JsonResponse({"error": "Teacher not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+@api_view(['GET'])
+def get_teacher_stats(request, teacher_id):
+    try:
+        teacher = TeacherDetails.objects.get(id=teacher_id)
+
+        data = {
+            "my_classes": LessonSchedule.objects.filter(teacher=teacher).count(),
+            "total_students": Student.objects.filter(teacher=teacher).count(),
+            "upcoming_classes": LessonSchedule.objects.filter(
+                teacher=teacher, 
+                day=now().strftime("%A"),  
+                start_time__gte=now().time()
+            ).count(),
+            "unread_messages": MessageTable.objects.filter(
+                Receiver=teacher.Email, Status="unread"
+            ).count(),
+        }
+
+        return Response(data)
+
+    except TeacherDetails.DoesNotExist:
+        return Response({"error": "Teacher not found"}, status=404)
+
+
+@api_view(["GET"])
+def recent_activities(request, teacher_id):
+    """
+    Return the 5 most recent activity logs for the teacher.
+    """
+    try:
+        teacher = TeacherDetails.objects.get(id=teacher_id)
+    except TeacherDetails.DoesNotExist:
+        return Response({"error": "Teacher not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    logs = (
+        ActivityLog.objects.filter(user=teacher.Name)
+        .order_by("-timestamp")[:5]
+    )
+
+    data = [
+        {
+            "title": log.action,
+            "description": f"By {log.user}",
+            "date": log.timestamp,
+        }
+        for log in logs
+    ]
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def upcoming_activities(request, teacher_id):
+    """
+    Return upcoming lessons, meetings, and events for the teacher (next 7 days).
+    """
+    try:
+        teacher = TeacherDetails.objects.get(id=teacher_id)
+    except TeacherDetails.DoesNotExist:
+        return Response({"error": "Teacher not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    today = timezone.now().date()
+    next_week = today + timezone.timedelta(days=7)
+
+    lessons = LessonSchedule.objects.filter(
+        teacher=teacher,
+        is_completed=False
+    )
+
+    meetings = Meeting.objects.filter(
+        teacher=teacher,
+        status="scheduled",
+        date__range=[today, next_week]
+    ).order_by("date", "time")
+
+    events = EventTable.objects.filter(
+        Date__range=[today, next_week]
+    ).order_by("Date", "Time")
+
+    lesson_data = [
+        {
+            "title": f"Lesson: {lesson.unit}",
+            "description": f"{lesson.day} from {lesson.start_time} - {lesson.end_time}",
+            "date": today,  
+        }
+        for lesson in lessons
+    ]
+
+    meeting_data = [
+        {
+            "title": meeting.title,
+            "description": meeting.description or "No description",
+            "date": datetime.combine(meeting.date, meeting.time),
+        }
+        for meeting in meetings
+    ]
+
+    event_data = [
+        {
+            "title": event.Title,
+            "description": f"{event.Type} at {event.Location}",
+            "date": datetime.combine(event.Date, event.Time),
+        }
+        for event in events
+    ]
+
+    return Response(lesson_data + meeting_data + event_data, status=status.HTTP_200_OK)

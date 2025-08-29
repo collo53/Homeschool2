@@ -12,7 +12,6 @@ export default function TeacherCalendarHero() {
   const [todayEvents, setTodayEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Helper: Get colors by type
   const getTypeColor = (type) => {
     switch (type) {
       case "Meeting":
@@ -28,14 +27,12 @@ export default function TeacherCalendarHero() {
     }
   };
 
-  // Fetch events from backend
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const res = await axios.get("http://127.0.0.1:8000/Hub/getevents/");
         console.log("Response from backend:", res.data);
 
-        // If response is { events: [...], today: [...] }
         const normalizedEvents = (res.data.events || res.data).map((event, index) => ({
           id: index + 1,
           title: event.Title,
@@ -64,20 +61,16 @@ export default function TeacherCalendarHero() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Calendar</h1>
           <p className="text-slate-600 mt-1">
-            Manage school events and appointments
+            View school events and appointments
           </p>
         </div>
-        <button className="flex items-center bg-[#ffc01d] hover:bg-black text-black hover:text-white px-4 py-2 rounded-md text-sm">
-          <FaPlus className="mr-2" />
-          Add Event for Students
-        </button>
+       
       </div>
 
       {loading ? (
         <p className="text-center text-slate-500">Loading events...</p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Events */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow">
               <div className="p-5 border-b border-gray-200 flex items-center gap-2">
@@ -122,9 +115,7 @@ export default function TeacherCalendarHero() {
                             </div>
                           </div>
                         </div>
-                        <button className="text-sm text-black bg-[#ffc01d] border border-gray-300 px-3 py-1 rounded hover:bg-black hover:text-white">
-                          Edit
-                        </button>
+                        
                       </div>
                     </div>
                   ))
@@ -133,7 +124,6 @@ export default function TeacherCalendarHero() {
             </div>
           </div>
 
-          {/* Today's Schedule */}
           <div>
             <div className="bg-white rounded-lg shadow">
               <div className="p-5 border-b border-gray-200 flex items-center gap-2">

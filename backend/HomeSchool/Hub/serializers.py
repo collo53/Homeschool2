@@ -33,7 +33,8 @@ class EventTableSerializer(serializers.ModelSerializer):
 class MessageTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = MessageTable
-        fields = ["Sender", "Receiver", "Subject", "Message", "DateSent", "Status"]
+        fields = '__all__'
+
 
 class AssignedStudentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,7 +47,40 @@ class AssignmentSerializer(serializers.ModelSerializer):
         model = Assignment
         fields = '__all__'
 
+class SubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Submission
+        fields = "__all__"
+
 class ActivityLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActivityLog
         fields = '__all__'
+
+
+
+class LessonScheduleSerializer(serializers.ModelSerializer):
+    teacher_name = serializers.CharField(source="teacher.Name", read_only=True)
+
+    class Meta:
+        model = LessonSchedule
+        fields = '__all__'
+        
+class MeetingSerializer(serializers.ModelSerializer):
+    teacher_name = serializers.CharField(source="teacher.Name", read_only=True)
+
+    class Meta:
+        model = Meeting
+        fields = [
+            "id",
+            "title",
+            "description",
+            "date",
+            "time",
+            "duration",
+            "grade",
+            "status",
+            "created_at",
+            "teacher",       
+            "teacher_name",
+        ]
