@@ -27,6 +27,8 @@ function TeacherLogin() {
   localStorage.setItem("teacher", JSON.stringify(response.data.teacher));
 
   localStorage.setItem("teacherId", response.data.teacher.id);
+    
+  localStorage.setItem("teacherNumber", response.data.teacher.TeacherNumber); // ✅ Add this
 
   console.log("Logged in user:", response.data.teacher);
 }

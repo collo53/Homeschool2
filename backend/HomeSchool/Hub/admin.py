@@ -12,5 +12,6 @@ admin.site.register(Assignment)
 admin.site.register(ActivityLog)
 admin.site.register(LessonSchedule)
 admin.site.register(Meeting)
+admin.site.register(Submission)
 
 # Register your models here.

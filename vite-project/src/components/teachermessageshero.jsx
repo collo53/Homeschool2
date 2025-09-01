@@ -41,30 +41,19 @@ const generateRecentContacts = (msgs) => {
   return Array.from(uniqueMap.values());
 };
 
-
 const fetchMessages = async () => {
   try {
-    const loggedInUser = JSON.parse(localStorage.getItem("teacher"));
-    if (!loggedInUser) {
-      console.warn("No logged in user found");
-      return;
-    }
-
-    const teacherNumber = loggedInUser.TeacherNumber;
-
+    const teacherNumber = localStorage.getItem("teacherNumber"); // Or from logged-in user
     if (!teacherNumber) {
-      console.warn("No TeacherNumber found for logged in user:", loggedInUser);
+      console.error("Teacher number is missing!");
       return;
     }
 
-    const response = await axios.get("http://127.0.0.1:8000/Hub/getmessages/");
-    console.log("Raw API data:", response.data);
-
-    const filtered = response.data.filter(
-      (msg) => msg.Sender === teacherNumber || msg.Receiver === teacherNumber
+    const response = await axios.get(
+      `http://127.0.0.1:8000/Hub/getteachermessages/${teacherNumber}/`
     );
 
-    const formatted = filtered.map((msg) => ({
+    const formatted = response.data.map((msg) => ({
       id: msg.id,
       from: msg.Sender,
       receiver: msg.Receiver,
@@ -76,15 +65,19 @@ const fetchMessages = async () => {
         : "Unknown date",
       unread: msg.Status?.toUpperCase() === "UNREAD",
       priority: msg.Status ? msg.Status.toLowerCase() : "normal",
-      DateSent: msg.DateSent,
+      dateSent: msg.DateSent,
     }));
 
     setMessages(sortMessagesByPriority(formatted));
-    setRecentContacts(generateRecentContacts(filtered));
+    setRecentContacts(generateRecentContacts(formatted));
+    console.log("Fetched messages:", formatted);
   } catch (err) {
     console.error("Error fetching messages", err);
   }
 };
+
+
+
 
 useEffect(() => {
   fetchMessages();

@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState ,useContext } from "react";
 import Axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
+import { AuthContext } from "../pages/AuthContext";
+import { toast } from "react-toastify";
 
 
 
@@ -8,6 +10,8 @@ function StudentLogin() {
   const [text, setText] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
+  
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -17,15 +21,22 @@ function StudentLogin() {
       Password: password,
     });
 
-    console.log("Success:", response.data);
-    alert("User login successful!");
-    
-    localStorage.setItem("student", JSON.stringify(response.data.student));
+    if (response.data.student) {
+      setUser(response.data.student);
 
-    navigate("/pages/studentmain");
+      localStorage.setItem("student", JSON.stringify(response.data.student));
+      localStorage.setItem("studentId", response.data.student.id); 
+      localStorage.setItem("studentNumber", response.data.student.studentNumber); 
+      console.log("Logged in student:", response.data.student);
+
+      toast.success("Login successful!");
+      navigate("/pages/studentmain");
+    } else {
+      toast.error("Invalid login. No student returned.");
+    }
   } catch (error) {
     console.error("Error:", error.response?.data || error.message);
-    alert("Login failed. Check console for details.");
+    toast.error("Login failed. Check your credentials.");
   }
 };
 

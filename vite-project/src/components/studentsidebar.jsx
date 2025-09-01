@@ -19,7 +19,7 @@ function StudentSidebar () {
       <ul className="mt-10 space-y-5 w-full">
         <SidebarLink icon={<FaSchool />} label="Dashboard" to="/pages/studentmain/" />
         <SidebarLink icon={<FaChalkboard />} label="My Classes" to="/pages/studentclass/" />
-        <SidebarLink icon={<FaGraduationCap />} label="My Lessons" to="/pages/studentlesson/" />
+        <SidebarLink icon={<FaGraduationCap />} label="My Assignments" to="/pages/studentlesson/" />
         <SidebarLink icon={<FaCalendar />} label="Calendar" to="/pages/studentcalendar/" />
         <SidebarLink icon={<FaCalculator />} label="Grades" to="/pages/studentgrades/" />
         <SidebarLink icon={<FaBook />} label="Online Meetings" to="/pages/studentmeetings/" />

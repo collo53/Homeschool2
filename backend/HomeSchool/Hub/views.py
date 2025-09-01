@@ -23,7 +23,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils.timezone import now
 from datetime import datetime
 
-
+ 
 
 User = get_user_model()
 
@@ -719,3 +719,228 @@ def upcoming_activities(request, teacher_id):
     ]
 
     return Response(lesson_data + meeting_data + event_data, status=status.HTTP_200_OK)
+
+
+class StudentClassesView(APIView):
+    def get(self, request, student_id):
+        try:
+            student = Student.objects.get(id=student_id)
+            serializer = AssignedStudentSerializer(student)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+@api_view(["GET"])
+def student_assignments(request, student_id):
+    try:
+        student = get_object_or_404(Student, id=student_id)
+
+        assignments = Assignment.objects.filter(teacher=student.teacher)
+
+        serializer = AssignmentSerializer(assignments, many=True, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Student.DoesNotExist:
+        return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print("Error in student_assignments:", e)
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def assignment_sub(request):
+    try:
+        assignment_id = request.POST.get("assignment")
+        student_id = request.POST.get("student")
+        file = request.FILES.get("file")
+
+        if not all([assignment_id, student_id, file]):
+            return JsonResponse({"error": "Missing required fields"}, status=400)
+
+        assignment = Assignment.objects.get(id=assignment_id)
+        student = Student.objects.get(id=student_id)
+
+        # Check if already submitted
+        if Submission.objects.filter(assignment=assignment, student=student).exists():
+            return JsonResponse({"error": "Already submitted"}, status=400)
+
+        submission = Submission.objects.create(
+            assignment=assignment,
+            student=student,
+            file=file
+        )
+
+        return JsonResponse({
+            "message": "Submission successful",
+            "submission_id": submission.id,
+            "submitted_at": submission.submitted_at
+        }, status=201)
+
+    except Assignment.DoesNotExist:
+        return JsonResponse({"error": "Assignment not found"}, status=404)
+    except Student.DoesNotExist:
+        return JsonResponse({"error": "Student not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+@api_view(['GET'])
+def get_student_meetings(request, student_id):
+    try:
+        student = Student.objects.get(id=student_id)
+    except Student.DoesNotExist:
+        return Response({"error": "Student not found"}, status=404)
+
+    meetings = Meeting.objects.filter(teacher=student.teacher)
+
+    serializer = MeetingSerializer(meetings, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def GetTeacherMessages(request, teacher_number=None):  
+    if teacher_number and teacher_number != "null":  
+        messages = MessageTable.objects.filter(
+            models.Q(Sender=teacher_number) | models.Q(Receiver=teacher_number)
+        ).order_by('-DateSent')
+    else:
+        messages = MessageTable.objects.all().order_by('-DateSent')
+
+    serializer = MessageTableSerializer(messages, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def GetStudentMessages(request, student_number=None):
+    """
+    Retrieve messages sent to or from a specific student.
+    """
+    if student_number and student_number != "null":
+        student_number = student_number.strip()  
+        messages = MessageTable.objects.filter(
+            models.Q(Sender__iexact=student_number) | 
+            models.Q(Receiver__iexact=student_number)
+        ).order_by('-DateSent')
+    else:
+        messages = MessageTable.objects.all().order_by('-DateSent')
+
+    serializer = MessageTableSerializer(messages, many=True)
+    return Response(serializer.data)
+
+@csrf_exempt
+def change_student_password(request, student_id):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            current_password = data.get("current_password")
+            new_password = data.get("new_password")
+
+            student = StudentTable.objects.get(id=student_id)
+
+            if not check_password(current_password, student.Password):
+                return JsonResponse({"error": "Current password is incorrect"}, status=400)
+
+            student.Password = make_password(new_password)
+            student.save()
+
+            return JsonResponse({"message": "Password updated successfully!"})
+
+        except StudentTable.DoesNotExist:
+            return JsonResponse({"error": "Student not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+@api_view(['GET'])
+def get_student_stats(request, student_id):
+    try:
+        student = Student.objects.get(id=student_id)
+        today = now().date()
+
+        data = {
+            "current_classes": LessonSchedule.objects.filter(
+                teacher=student.teacher
+            ).count(),
+            "completed_lessons": Submission.objects.filter(
+                student=student, grade__isnull=False
+            ).count(),
+            "upcoming_meetings": Meeting.objects.filter(
+                grade=student.teacher.Grade, status="scheduled", date__gte=today
+            ).count(),
+            "unread_messages": MessageTable.objects.filter(
+                Receiver=student.name, Status="unread"
+            ).count(),
+        }
+        return Response(data)
+    except Student.DoesNotExist:
+        return Response({"error": "Student not found"}, status=404)
+
+@api_view(['GET'])
+def get_recent_lessons(request, student_id):
+    try:
+        student = Student.objects.get(id=student_id)
+        submissions = Submission.objects.filter(student=student).order_by('-submitted_at')[:5]
+
+        data = [
+            {
+                "subject": sub.assignment.class_name,
+                "topic": sub.assignment.title,
+                "completed": bool(sub.grade),
+                "grade": sub.grade if sub.grade else None,
+                "submitted_at": sub.submitted_at,
+            }
+            for sub in submissions
+        ]
+        return Response(data)
+    except Student.DoesNotExist:
+        return Response({"error": "Student not found"}, status=404)
+
+
+@api_view(['GET'])
+def get_upcoming_classes(request, student_id):
+    try:
+        student = Student.objects.get(id=student_id)
+        today = now().date()
+        current_day = now().strftime("%A")
+
+        lessons = LessonSchedule.objects.filter(
+            teacher=student.teacher,
+            day=current_day,
+            start_time__gte=now().time()
+        ).order_by('start_time')
+
+        data = [
+            {
+                "subject": lesson.unit,
+                "teacher": lesson.teacher.Name,
+                "day": lesson.day,
+                "start_time": lesson.start_time,
+                "end_time": lesson.end_time
+            }
+            for lesson in lessons
+        ]
+        return Response(data)
+    except Student.DoesNotExist:
+        return Response({"error": "Student not found"}, status=404)
+    
+
+@api_view(['GET'])
+def get_upcoming_meetings(request, student_id):
+    try:
+        student = Student.objects.get(id=student_id)
+        today = now().date()
+
+        meetings = Meeting.objects.filter(
+            grade=student.teacher.Grade,
+            status="scheduled",
+            date__gte=today
+        ).order_by('date', 'time')
+
+        data = [
+            {
+                "title": meeting.title,
+                "description": meeting.description,
+                "date": meeting.date,
+                "time": meeting.time
+            }
+            for meeting in meetings
+        ]
+        return Response(data)
+    except Student.DoesNotExist:
+        return Response({"error": "Student not found"}, status=404)

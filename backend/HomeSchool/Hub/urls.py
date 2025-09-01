@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import PrincipalLogin ,StudentLogin, TeacherLogin, AddTeacher,GetTeachers,AddStudent,GetStudents,AddCourse,GetCourses,AddEvents,GetEvents,AddMessage,GetMessages,UpdateEmail, UpdatePassword,GetTeacherCoursesById,assign_students,get_students_for_teacher,assignment_list,get_stats,get_activities,delete_teacher,delete_student,search_users,AddCourseSchedule,GetTeacherLessons,submit_assignment,get_submissions
+from .views import PrincipalLogin ,StudentLogin, TeacherLogin, AddTeacher,GetTeachers,AddStudent,GetStudents,AddCourse,GetCourses,AddEvents,GetEvents,AddMessage,GetMessages,UpdateEmail, UpdatePassword,GetTeacherCoursesById,assign_students,get_students_for_teacher,assignment_list,get_stats,get_activities,delete_teacher,delete_student,search_users,AddCourseSchedule,GetTeacherLessons,submit_assignment,get_submissions,StudentClassesView,student_assignments ,GetTeacherMessages   
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
-
+ 
 
 urlpatterns = [
     path('principallogin/', PrincipalLogin.as_view(), name='PrincipalLogin'),
@@ -48,6 +48,18 @@ urlpatterns = [
     path("teachers/<int:teacher_id>/stats/", views.get_teacher_stats, name="get_teacher_stats"),
     path("teachers/<int:teacher_id>/recent-activities/", views.recent_activities, name="recent_activities"),
     path("teachers/<int:teacher_id>/upcoming-activities/", views.upcoming_activities, name="upcoming_activities"),
+    path("student/<int:student_id>/classes/", StudentClassesView.as_view(), name="student-classes"),
+    path("student/<int:student_id>/assignments/", student_assignments, name="student-assignments"),
+    path("submit-assignment/", views.assignment_sub, name="assignment_sub"),
+    path("student/<int:student_id>/meetings/", views.get_student_meetings, name="get_student_meetings"),
+    path("getteachermessages/<str:teacher_number>/", views.GetTeacherMessages),
+    path("getstudentmessages/<str:student_number>/", views.GetStudentMessages),
+    path("student/<int:student_id>/change-password/", views.change_student_password, name="change_student_password"),
+    path('student/<int:student_id>/stats/', views.get_student_stats, name='student-stats'),
+    path('student/<int:student_id>/recent-lessons/', views.get_recent_lessons, name='student-recent-lessons'),
+    path('student/<int:student_id>/upcoming-classes/', views.get_upcoming_classes, name='student-upcoming-classes'),
+    path('student/<int:student_id>/upcoming-meetings/', views.get_upcoming_meetings, name='student-upcoming-meetings'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
