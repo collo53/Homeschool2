@@ -22,11 +22,11 @@ const StudentsDashboard = () => {
     if (!studentId) return;
 
 
-    axios.get(`http://127.0.0.1:8000/Hub/student/${studentId}/stats/`)
+    axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/student/${studentId}/stats/`)
       .then(res => setStats(res.data))
       .catch(err => console.error(err));
 
-    axios.get(`http://127.0.0.1:8000/Hub/student/${studentId}/upcoming-classes/`)
+    axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/student/${studentId}/upcoming-classes/`)
       .then(res => {
         const formatted = res.data.map(cls => ({
           subject: cls.unit,
@@ -38,7 +38,7 @@ const StudentsDashboard = () => {
       })
       .catch(err => console.error(err));
 
-    axios.get(`http://127.0.0.1:8000/Hub/student/${studentId}/recent-lessons/`)
+    axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/student/${studentId}/recent-lessons/`)
       .then(res => {
         const formatted = res.data.map(lesson => ({
           subject: lesson.subject,
@@ -51,7 +51,7 @@ const StudentsDashboard = () => {
       })
       .catch(err => console.error(err));
 
-    axios.get(`http://127.0.0.1:8000/Hub/student/${studentId}/upcoming-meetings/`)
+    axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/student/${studentId}/upcoming-meetings/`)
       .then(res => {
         const formatted = res.data.map(meeting => ({
           title: meeting.title,

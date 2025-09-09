@@ -51,10 +51,10 @@ const handleAddStudent = async () => {
     courses: newStudent.courses,
   };
   try {
-    const response = await axios.post("http://127.0.0.1:8000/Hub/addstudent/", studentPayload);
+    const response = await axios.post("https://homeschoolhub-sigma.vercel.app/Hub/addstudent/", studentPayload);
       toast.success(" Student added successfully!");
   } catch (error) {
-      toast.error(" Error adding student");
+      toast.error(" Error adding student",error);
   }
 }
 

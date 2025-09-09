@@ -13,7 +13,7 @@ function Teachers() {
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/Hub/getteachers/");
+        const response = await fetch("https://homeschoolhub-sigma.vercel.app/Hub/getteachers/");
         if (response.ok) {
           const data = await response.json();
           setTeachers(data);

@@ -23,7 +23,7 @@ const StudentLessonHero = () => {
     if (!studentId) return;
 
     axios
-      .get(`http://127.0.0.1:8000/Hub/student/${studentId}/assignments/`)
+      .get(`https://homeschoolhub-sigma.vercel.app/Hub/student/${studentId}/assignments/`)
       .then((res) => {
         setAssignments(res.data);
       })
@@ -63,7 +63,7 @@ const handleDownload = (fileUrl) => {
     formData.append("assignment", selectedAssignment.id);
 
     try {
-      await axios.post("http://127.0.0.1:8000/Hub/submit-assignment/", formData, {
+      await axios.post("https://homeschoolhub-sigma.vercel.app/Hub/submit-assignment/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast("Assignment submitted successfully!");

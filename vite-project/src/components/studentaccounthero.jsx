@@ -29,7 +29,7 @@ export default function StudentAccountHero() {
   try {
     const studentId = localStorage.getItem("studentId"); 
     const res = await axios.post(
-      `http://127.0.0.1:8000/Hub/student/${studentId}/change-password/`,
+      `https://homeschoolhub-sigma.vercel.app/Hub/student/${studentId}/change-password/`,
       {
         current_password: currentPassword,
         new_password: newPassword,

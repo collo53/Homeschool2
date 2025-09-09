@@ -22,7 +22,7 @@ export default function AccountHero() {
     }
 
     try {
-      const response = await axios.post("http://localhost:8000/Hub/update-email/", {
+      const response = await axios.post("https://homeschoolhub-sigma.vercel.app/Hub/update-email/", {
         old_email: oldEmail,
         new_email: newEmail,
       });
@@ -46,7 +46,7 @@ export default function AccountHero() {
     }
 
     try {
-      const response = await axios.post("http://localhost:8000/Hub/update-password/", {
+      const response = await axios.post("https://homeschoolhub-sigma.vercel.app/Hub/update-password/", {
         email: newEmail,
         current_password: currentPassword,
         new_password: newPassword,

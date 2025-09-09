@@ -21,7 +21,7 @@ function AddTeacherModal({ onClose, setTeachers }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
+        const response = await axios.get("https://homeschool2.onrender.com/Hub/getcourses/");
         console.log("Courses API response:", response.data); 
 
         setCourses(response.data); 
@@ -53,7 +53,7 @@ function AddTeacherModal({ onClose, setTeachers }) {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/Hub/addteacher/", {
+      const response = await fetch("https://homeschoolhub-sigma.vercel.app/Hub/addteacher/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(teacherPayload),

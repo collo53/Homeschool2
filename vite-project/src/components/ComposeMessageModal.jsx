@@ -29,7 +29,7 @@ export default function ComposeMessageModal({ onClose, onSend }) {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/Hub/search-users/?q=${query}`
+        `https://homeschoolhub-sigma.vercel.app/Hub/search-users/?q=${query}`
       );
       setSuggestions(response.data);
       setShowSuggestions(true);
@@ -55,7 +55,7 @@ export default function ComposeMessageModal({ onClose, onSend }) {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/Hub/addmessage/",
+        "https://homeschoolhub-sigma.vercel.app/Hub/addmessage/",
         newMessage
       );
 

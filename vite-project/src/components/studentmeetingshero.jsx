@@ -18,7 +18,7 @@ const StudentMeetingsHero = () => {
       try {
         const studentId = localStorage.getItem("studentId");
         const response = await axios.get(
-          `http://127.0.0.1:8000/Hub/student/${studentId}/meetings/`
+          `https://homeschoolhub-sigma.vercel.app/Hub/student/${studentId}/meetings/`
         );
 
         const now = new Date();

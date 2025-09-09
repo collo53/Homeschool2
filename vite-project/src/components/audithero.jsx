@@ -8,7 +8,7 @@ export default function AuditLogs() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await fetch("http://localhost:8000/Hub/activities/");
+        const response = await fetch("https://homeschoolhub-sigma.vercel.app/Hub/activities/");
         const data = await response.json();
         setActivities(data);
       } catch (error) {
@@ -17,7 +17,7 @@ export default function AuditLogs() {
     };
 
     fetchActivities();
-    const interval = setInterval(fetchActivities, 10000); // Refresh every 10 seconds
+    const interval = setInterval(fetchActivities, 10000); 
     return () => clearInterval(interval);
   }, []);
 

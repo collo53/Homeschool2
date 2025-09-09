@@ -18,7 +18,7 @@ export default function TeachersDashboardHero() {
 
     async function fetchStats() {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/Hub/teachers/${teacherId}/stats/`);
+        const res = await axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/teachers/${teacherId}/stats/`);
         const data = res.data;
 
         setStats([
@@ -58,10 +58,10 @@ export default function TeachersDashboardHero() {
 
     async function fetchActivities() {
       try {
-        const recentRes = await axios.get(`http://127.0.0.1:8000/Hub/teachers/${teacherId}/recent-activities/`);
+        const recentRes = await axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/teachers/${teacherId}/recent-activities/`);
         setRecentActivities(recentRes.data);
 
-        const upcomingRes = await axios.get(`http://127.0.0.1:8000/Hub/teachers/${teacherId}/upcoming-activities/`);
+        const upcomingRes = await axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/teachers/${teacherId}/upcoming-activities/`);
         setUpcomingActivities(upcomingRes.data);
       } catch (err) {
         console.error("Error fetching activities:", err);

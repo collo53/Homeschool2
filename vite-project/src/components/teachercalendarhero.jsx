@@ -30,7 +30,7 @@ export default function TeacherCalendarHero() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/Hub/getevents/");
+        const res = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getevents/");
 
         const normalizedEvents = (res.data.events || res.data).map((event, index) => ({
           id: index + 1,

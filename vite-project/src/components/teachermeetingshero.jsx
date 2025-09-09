@@ -24,7 +24,7 @@ export default function TeacherMeetingsHero() {
         const teacherId = localStorage.getItem("teacherId")
         if (!teacherId) return
 
-        const res = await axios.get("http://127.0.0.1:8000/Hub/meetings/", {
+        const res = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/meetings/", {
           params: { teacher: teacherId },
         })
         setMeetings(res.data)
@@ -43,7 +43,7 @@ export default function TeacherMeetingsHero() {
 
     if (editingMeetingId) {
       const res = await axios.put(
-        `http://127.0.0.1:8000/Hub/meetings/${editingMeetingId}/update/`,
+        `https://homeschoolhub-sigma.vercel.app/Hub/meetings/${editingMeetingId}/update/`,
         {
           title: formData.title,
           description: formData.description,
@@ -61,7 +61,7 @@ export default function TeacherMeetingsHero() {
       toast.success("Meeting updated successfully!");
     } else {
       const res = await axios.post(
-        "http://127.0.0.1:8000/Hub/meetings/create/",
+        "https://homeschoolhub-sigma.vercel.app/Hub/meetings/create/",
         {
           title: formData.title,
           description: formData.description,
@@ -97,7 +97,7 @@ export default function TeacherMeetingsHero() {
 
 const handleDelete = async (id) => {
   try {
-    await axios.delete(`http://127.0.0.1:8000/Hub/meetings/${id}/delete/`);
+    await axios.delete(`https://homeschoolhub-sigma.vercel.app/Hub/meetings/${id}/delete/`);
     setMeetings(meetings.filter(m => m.id !== id));
     toast.success("Meeting deleted successfully!");
   } catch (error) {

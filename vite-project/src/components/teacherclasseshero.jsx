@@ -35,7 +35,7 @@ export default function TeacherClassesHero() {
   const fetchLessons = async () => {
     if (teacherId) {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/Hub/get-lessons/${teacherId}/`);
+        const res = await axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/get-lessons/${teacherId}/`);
         setLessons(res.data);
       } catch (err) {
         console.error("Error fetching lessons:", err);
@@ -53,7 +53,7 @@ export default function TeacherClassesHero() {
     const payload = { teacher: teacherId, ...newLesson };
 
     try {
-      await axios.post("http://127.0.0.1:8000/Hub/addcourse-schedule/", payload);
+      await axios.post("https://homeschoolhub-sigma.vercel.app/Hub/addcourse-schedule/", payload);
       toast("Lesson created successfully!");
       fetchLessons();
     } catch (error) {
@@ -73,7 +73,7 @@ export default function TeacherClassesHero() {
 
   const saveEdit = async (lessonId) => {
     try {
-      await axios.put(`http://127.0.0.1:8000/Hub/update-lesson/${lessonId}/`, editData);
+      await axios.put(`https://homeschoolhub-sigma.vercel.app/Hub/update-lesson/${lessonId}/`, editData);
       toast("Lesson updated successfully!");
       fetchLessons();
       setEditingLesson(null);
@@ -85,7 +85,7 @@ export default function TeacherClassesHero() {
 
   const toggleCompletion = async (lessonId, isCompleted) => {
     try {
-      await axios.put(`http://127.0.0.1:8000/Hub/update-lesson/${lessonId}/`, {
+      await axios.put(`https://homeschoolhub-sigma.vercel.app/Hub/update-lesson/${lessonId}/`, {
         is_completed: isCompleted,
       });
       fetchLessons();

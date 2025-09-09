@@ -14,7 +14,7 @@ function TeacherLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await Axios.post("http://127.0.0.1:8000/Hub/teacherlogin/", {
+      const response = await Axios.post("https://homeschoolhub-sigma.vercel.app/Hub/teacherlogin/", {
         TeacherNumber: text,
         Password: password,
       });
