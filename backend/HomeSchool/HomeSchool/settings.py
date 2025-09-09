@@ -81,7 +81,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
 CORS_ALLOW_CREDENTIALS = True
-
+ 
+ALLOWED_HOSTS = ['*']
 
 ROOT_URLCONF = 'HomeSchool.urls'
 
@@ -108,9 +109,10 @@ WSGI_APPLICATION = 'HomeSchool.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv("DATABASE_URL")
+        default="postgresql://hub_mlk9_user:ZKPOiQFpfWtxm0O0B1J09xKKHTo2pRxv@dpg-d2vvu40gjchc73cj9eb0-a.oregon-postgres.render.com/hub_mlk9"
     )
 }
+
 
 
 

@@ -102,7 +102,7 @@ class LessonSchedule(models.Model):
         ("Saturday", "Saturday"),
         ("Sunday", "Sunday"),
     ]
-    day = models.CharField(max_length=9, choices=DAYS_OF_WEEK)  
+    day = models.CharField(max_length=20, choices=DAYS_OF_WEEK)  
     start_time = models.TimeField()
     end_time = models.TimeField()
 
