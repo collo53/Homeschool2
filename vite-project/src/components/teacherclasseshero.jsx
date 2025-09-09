@@ -45,7 +45,6 @@ export default function TeacherClassesHero() {
 
   useEffect(() => {
     fetchLessons();
-      console.log("Current Teacher ID from localStorage:", teacherId);
 
   }, [teacherId]);
 

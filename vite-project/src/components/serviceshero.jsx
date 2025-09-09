@@ -1,26 +1,27 @@
 import React from "react";
 
 function ServicesHero() {
-    return (
+  return (
+    <section className="relative flex flex-col md:flex-row items-center justify-center text-center md:text-left bg-gradient-to-r from-black via-gray-900 to-yellow-400 px-6 md:px-12 h-screen">
+      
+      {/* Content */}
+      <div className="max-w-2xl">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-6 text-yellow-300 drop-shadow-lg">
+          Services We Offer
+        </h1>
 
-<div className="flex flex-col md:flex-row justify-center items-center text-center bg-gradient-to-r from-black to-yellow-400 mx-auto h-screen md:h-screen pt-20 px-6">
+        <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-gray-100 mb-8">
+         We are committed to providing quality education that nurtures 
+  academic excellence, personal growth, and lifelong learning. We offer a wide 
+  range of programs — from strong academic foundations and co-curricular 
+  activities to student mentorship and community engagement — ensuring every 
+  learner reaches their fullest potential.
+        </p>
 
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-yellow-300">
-                        Services We Offer
-                    </h1>
-                    <p className="text-sm sm:text-base leading-7 text-white max-w-lg">
-                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Deleniti,
-                        cupiditate et. Ducimus sed quaerat quod, dolorum distinctio quis et qui
-                        voluptatum accusantium excepturi quam. Dolore eveniet vel suscipit
-                        voluptate placeat!
-                    </p>
-                    <button className="mt-6 px-6 py-3 bg-[#ffc01d] text-white rounded-md hover:bg-black transition duration-300">
-                        Explore more
-                    </button>
-                </div>
-        </div>
-
-    );
+        
+      </div>
+    </section>
+  );
 }
+
 export default ServicesHero;

@@ -26,7 +26,6 @@ const StudentLessonHero = () => {
       .get(`http://127.0.0.1:8000/Hub/student/${studentId}/assignments/`)
       .then((res) => {
         setAssignments(res.data);
-        console.log("Fetched assignments:", res.data);
       })
       .catch((err) => {
         console.error("Error fetching assignments:", err);
@@ -40,7 +39,7 @@ const handleDownload = (fileUrl) => {
   }
   const link = document.createElement("a");
   link.href = fileUrl;
-  link.setAttribute("download", fileUrl.split("/").pop()); // filename from URL
+  link.setAttribute("download", fileUrl.split("/").pop()); 
   document.body.appendChild(link);
   link.click();
   link.remove();

@@ -14,7 +14,7 @@ export default function TeachersMessagesHero() {
   const [messages, setMessages] = useState([]);
   const [recentContacts, setRecentContacts] = useState([]);
   const [showCompose, setShowCompose] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState(null); // for viewing
+  const [selectedMessage, setSelectedMessage] = useState(null); 
 
   const sortMessagesByPriority = (messages) => {
     const priorityOrder = { high: 1, moderate: 2, low: 3 };
@@ -27,7 +27,7 @@ const generateRecentContacts = (msgs) => {
   const uniqueMap = new Map();
 
   msgs.forEach((msg) => {
-    const name = msg.Sender || msg.from || "Unknown"; // 👈 use Sender instead of Receiver
+    const name = msg.Sender || msg.from || "Unknown"; 
     if (!uniqueMap.has(name)) {
       uniqueMap.set(name, {
         name,
@@ -43,7 +43,7 @@ const generateRecentContacts = (msgs) => {
 
 const fetchMessages = async () => {
   try {
-    const teacherNumber = localStorage.getItem("teacherNumber"); // Or from logged-in user
+    const teacherNumber = localStorage.getItem("teacherNumber"); 
     if (!teacherNumber) {
       console.error("Teacher number is missing!");
       return;
@@ -70,7 +70,6 @@ const fetchMessages = async () => {
 
     setMessages(sortMessagesByPriority(formatted));
     setRecentContacts(generateRecentContacts(formatted));
-    console.log("Fetched messages:", formatted);
   } catch (err) {
     console.error("Error fetching messages", err);
   }

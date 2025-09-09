@@ -31,7 +31,6 @@ export default function StudentCalendarHero() {
     const fetchEvents = async () => {
       try {
         const res = await axios.get("http://127.0.0.1:8000/Hub/getevents/");
-        console.log("Response from backend:", res.data);
 
         const normalizedEvents = (res.data.events || res.data).map((event, index) => ({
           id: index + 1,

@@ -3,6 +3,7 @@ import Axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../pages/AuthContext";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 
 
@@ -10,10 +11,9 @@ function StudentLogin() {
   const [text, setText] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
-  
+const { setUser, scheduleLogout } = useContext(AuthContext); 
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const response = await Axios.post("http://127.0.0.1:8000/Hub/studentlogin/", {
@@ -21,13 +21,17 @@ function StudentLogin() {
       Password: password,
     });
 
-    if (response.data.student) {
+    if (response.data.student && response.data.access) {
       setUser(response.data.student);
 
-      localStorage.setItem("student", JSON.stringify(response.data.student));
-      localStorage.setItem("studentId", response.data.student.id); 
-      localStorage.setItem("studentNumber", response.data.student.studentNumber); 
-      console.log("Logged in student:", response.data.student);
+      localStorage.setItem("user", JSON.stringify(response.data.student));
+      localStorage.setItem("accessToken", response.data.access);
+      localStorage.setItem("refreshToken", response.data.refresh);
+      localStorage.setItem("studentId", response.data.student.id);
+      localStorage.setItem("studentNumber", response.data.student.studentNumber);
+      localStorage.setItem("role", "3");
+
+      scheduleLogout(response.data.access);
 
       toast.success("Login successful!");
       navigate("/pages/studentmain");
@@ -45,7 +49,20 @@ function StudentLogin() {
     <div className="flex flex-col items-center justify-center min-h-screen w-screen bg-gray-100">
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          
+           <div className="flex justify-center gap-6 mb-6 text-gray-400">
+                      <Link to="/" className=" hover:underline font-medium">
+                        Home 
+                      </Link>
+                      <Link to="/pages/principallogin" className=" hover:underline font-medium">
+                        Principal 
+                      </Link>
+                      <Link to="/pages/teacherlogin" className=" hover:underline font-medium">
+                        Teacher 
+                      </Link>
+                      <Link to="/pages/studentlogin" className=" hover:underline font-medium">
+                        Student 
+                      </Link>
+                    </div>
           
           <h2 className="mt-10 text-center text-3xl/9 font-bold tracking-tight text-[#ffc01d]">
             Sign in to your account

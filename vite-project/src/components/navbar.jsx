@@ -27,7 +27,7 @@ function Navbar() {
       >
         <ul className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 text-white text-lg text-center sm:text-left">
           <li>
-            <a href="#" className="hover:text-[#ffc01d]">Home</a>
+            <a href="/" className="hover:text-[#ffc01d]">Home</a>
           </li>
           <li>
             <Link to="/pages/about" className="hover:text-[#ffc01d]">About</Link>
@@ -82,17 +82,7 @@ function Navbar() {
         </ul>
       </div>
 
-      {/* Register/Login Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 mt-4 sm:mt-0 items-center">
-        <a href="#" className="flex items-center hover:text-blue-400">
-          <FaInfoCircle className="mr-2" />
-          Register
-        </a>
-        <a href="#" className="flex items-center hover:text-blue-400">
-          <FaHome className="mr-2" />
-          Login
-        </a>
-      </div>
+      
     </div>
   );
 }

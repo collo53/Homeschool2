@@ -17,15 +17,14 @@ const StudentClassHero = () => {
             subject: lesson.unit,
             teacher: teacher.Name,
             schedule: `${lesson.day} ${lesson.start_time} - ${lesson.end_time}`,
-            students: 0, // optional: count from backend if needed
+            students: 0, 
             nextClass: `${lesson.day} ${lesson.start_time}`,
-            progress: 0, // optional: calculate from submissions
+            progress: 0, 
             grade: teacher.Grade,
             room: "TBD"
           }));
           setClasses(mappedClasses);
         }
-        console.log("Fetched classes:", res.data);
       })
       
       .catch((err) => console.error("Error fetching classes:", err));

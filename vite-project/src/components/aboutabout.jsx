@@ -1,42 +1,63 @@
 import React from "react";
 
-function Aboutabout(){
-    return(
-        <div className="flex flex-col-reverse md:flex-row justify-center items-center  gap-12 w-full bg-neutral-200 px-6 py-10 md:px-20 md:py-20 leading-9">
-
-             <div className="flex flex-col w-full md:w-1/2">
-    <h1 className="text-[#ffc01d] text-3xl font-bold mb-4">About Us</h1>
-    <p className="text-black text-base mb-4">
-      Far far away, behind the word mountains, far from the countries Vokalia and Consonantia,
-      there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the
-      Semantics, a large language ocean.
-    </p>
-    <ul className="text-black space-y-2">
-      <li><span className="text-[#ffc01d] mr-2">✓</span>Separated they live</li>
-      <li><span className="text-[#ffc01d] mr-2">✓</span>Separated they live</li>
-      <li><span className="text-[#ffc01d] mr-2">✓</span>Separated they live</li>
-    </ul>
-
-    <div className="flex flex-col sm:flex-row gap-4 mt-6">
-      <button className="bg-[#ffc01d] text-white px-6 py-2 rounded-md hover:bg-black transition-all">
-        Admission
-      </button>
-      <button className="text-[#ffc01d] border border-[#ffc01d] px-6 py-2 rounded-md hover:bg-[#ffc01d] hover:text-white transition-all">
-        Learn More
-      </button>
-    </div>
-  </div>
-
-  {/* Image Section */}
-  <div className="w-full md:w-1/2">
-    <img
-      src="https://images.unsplash.com/photo-1727553957823-a54c8ff6a3ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      alt="About Us"
-      className="w-full h-auto object-cover rounded-lg shadow-md"
-    />
-  </div>
-</div>
+function Aboutabout() {
+  return (
+    <section className="flex flex-col-reverse md:flex-row justify-center items-center gap-12 w-full bg-neutral-100 px-6 py-12 md:px-20 md:py-20">
       
-    );
+      {/* Text Section */}
+      <div className="flex flex-col w-full md:w-1/2 text-center md:text-left">
+        <h1 className="text-[#ffc01d] text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+          About Us
+        </h1>
+        <p className="text-gray-700 text-lg leading-relaxed mb-6">
+          At <span className="font-semibold text-[#ffc01d]">Homeschool Hub</span>, 
+          we believe that every child deserves a personalized approach to education. 
+          Our mission is to create a nurturing environment where curiosity thrives, 
+          talents are discovered, and learning becomes a joyful journey.  
+        </p>
+        <p className="text-gray-700 text-lg leading-relaxed mb-6">
+          We partner with families to provide flexible, innovative, and engaging 
+          programs that support academic excellence while also building confidence, 
+          creativity, and character.
+        </p>
+
+        {/* Key Values */}
+        <h2 className="text-[#ffc01d] font-bold text-3xl pb-2">Our Goals</h2>
+        <ul className="text-gray-800 space-y-3 mb-8">
+          <li className="flex items-center">
+            <span className="text-[#ffc01d] text-xl mr-3">✓</span>
+            Personalized learning paths for every child
+          </li>
+          <li className="flex items-center">
+            <span className="text-[#ffc01d] text-xl mr-3">✓</span>
+            Focus on creativity, critical thinking, and confidence
+          </li>
+          <li className="flex items-center">
+            <span className="text-[#ffc01d] text-xl mr-3">✓</span>
+            Strong partnership with families and communities
+          </li>
+        </ul>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button className="bg-[#ffc01d] text-white font-medium px-8 py-3 rounded-lg shadow-md hover:bg-black hover:shadow-lg transition-all duration-300">
+            Admission
+          </button>
+          <button className="text-[#ffc01d] border-2 border-[#ffc01d] font-medium px-8 py-3 rounded-lg hover:bg-[#ffc01d] hover:text-white transition-all duration-300">
+            Learn More
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full md:w-1/2">
+        <img
+          src="https://images.unsplash.com/photo-1727553957823-a54c8ff6a3ff?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3"
+          alt="About Us"
+          className="w-full h-auto object-cover rounded-2xl shadow-lg hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+    </section>
+  );
 }
+
 export default Aboutabout;

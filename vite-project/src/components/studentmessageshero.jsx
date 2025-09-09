@@ -70,7 +70,6 @@ const fetchMessages = async () => {
 
     setMessages(sortMessagesByPriority(formatted));
     setRecentContacts(generateRecentContacts(formatted));
-    console.log("Fetched messages:", formatted);
   } catch (err) {
     console.error("Error fetching messages", err);
   }

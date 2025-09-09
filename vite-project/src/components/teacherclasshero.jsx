@@ -8,11 +8,9 @@ export default function TeacherStudentsHero({ teacher }) {
   useEffect(() => {
     const fetchAssignedStudents = async () => {
       try {
-        console.log("Fetching students for teacher ID:", teacher.id);
 
         const response = await axios.get(`http://localhost:8000/Hub/getstudentsforteacher/${teacher.id}/`);
         setAssignedStudents(response.data);
-        console.log("Assigned Students:", response.data);
       } catch (error) {
         console.error("Failed to fetch students for teacher:", error);
       }

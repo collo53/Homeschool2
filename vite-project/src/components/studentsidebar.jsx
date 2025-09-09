@@ -16,7 +16,7 @@ function StudentSidebar () {
       </div>
 
       
-      <ul className="mt-10 space-y-5 w-full">
+      <ul className="mt-10 space-y-5 w-full overflow-y-scroll">
         <SidebarLink icon={<FaSchool />} label="Dashboard" to="/pages/studentmain/" />
         <SidebarLink icon={<FaChalkboard />} label="My Classes" to="/pages/studentclass/" />
         <SidebarLink icon={<FaGraduationCap />} label="My Assignments" to="/pages/studentlesson/" />

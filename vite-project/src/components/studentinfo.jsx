@@ -68,7 +68,7 @@ const handleAddStudent = async () => {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Students</h1>
           <p className="text-slate-600 mt-1">Manage student enrollment and academic progress</p>

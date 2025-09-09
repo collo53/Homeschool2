@@ -16,16 +16,15 @@ function AddTeacherModal({ onClose, setTeachers }) {
     startDate: "",
   });
 
-  const [courses, setCourses] = useState([]); // 👈 store fetched courses
+  const [courses, setCourses] = useState([]); 
 
-  // Fetch courses when modal opens
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
-        console.log("Courses API response:", response.data); // 👈 check structure
+        console.log("Courses API response:", response.data); 
 
-        setCourses(response.data); // 👈 assuming response is a list of courses
+        setCourses(response.data); 
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
@@ -70,7 +69,7 @@ function AddTeacherModal({ onClose, setTeachers }) {
         console.error("Failed to save teacher");
       }
     } catch (error) {
-      toast.error("Failed to save teacher");
+      toast.error("Failed to save teacher",error);
     }
   };
 

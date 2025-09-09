@@ -37,50 +37,53 @@ import TeacherLogin from './pages/teacherlogin';
 import { AuthProvider } from "./pages/AuthContext"; 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PrivateRoute from "./pages/PrivateRoute";
 
 function App() {
   return (
-    <AuthProvider>
       <Router>
+            <AuthProvider>
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/pages/about" element={<About />} />
           <Route path="/pages/services" element={<Services />} />
           <Route path="/pages/contact" element={<Contact />} />
-          <Route path="/pages/Principal" element={<Principal />} />
-          <Route path="/pages/teachers" element={<Teachers />} />
-          <Route path="/pages/students" element={<Students />} />
-          <Route path="/pages/courses" element={<Courses />} />
-          <Route path="/pages/reports" element={<Reports />} />
-          <Route path="/pages/calendar" element={<Calendar />} />
-          <Route path="/pages/messages" element={<Messages />} />
-          <Route path="/pages/account" element={<Account />} />
-          <Route path="/pages/audit" element={<Audit />} />
-          <Route path="/pages/teachermain" element={<TeacherMain />} />
-          <Route path="/pages/teacherclasses" element={<TeacherMainClasses />} />
-          <Route path="/pages/teacherstudents" element={<TeacherStudents />} />
-          <Route path="/pages/teacherassignments" element={<TeacherAssignments />} />
-          <Route path="/pages/teachergrades" element={<TeacherGrades />} />
-          <Route path="/pages/teachercalendar" element={<TeacherCalendar />} />
-          <Route path="/pages/teachermessages" element={<TeacherMessages />} />
-          <Route path="/pages/teachermeetings" element={<TeacherMeetings />} />
-          <Route path="/pages/teacheraccount" element={<TeacherAccount />} />
-          <Route path="/pages/studentmain" element={<StudentMain />} />
-          <Route path="/pages/studentclass" element={<StudentClass />} />
-          <Route path="/pages/studentlesson" element={<StudentLesson />} />
-          <Route path="/pages/studentcalendar" element={<StudentCalendar />} />
-          <Route path="/pages/studentgrades" element={<StudentGrades />} />
-          <Route path="/pages/studentmeetings" element={<StudentMeetings />} />
-          <Route path="/pages/studentmessages" element={<StudentMessages />} />
-          <Route path="/pages/studentaccount" element={<StudentAccount />} />
+          <Route path="/pages/Principal" element={<PrivateRoute><Principal /></PrivateRoute>} />
+          <Route path="/pages/teachers" element={<PrivateRoute><Teachers /></PrivateRoute>} />
+          <Route path="/pages/students" element={<PrivateRoute><Students /></PrivateRoute>} />
+          <Route path="/pages/courses" element={<PrivateRoute><Courses /></PrivateRoute>} />
+          <Route path="/pages/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+          <Route path="/pages/calendar" element={<PrivateRoute><Calendar /></PrivateRoute>} />
+          <Route path="/pages/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
+          <Route path="/pages/account" element={<PrivateRoute><Account /></PrivateRoute>} />
+          <Route path="/pages/audit" element={<PrivateRoute><Audit /></PrivateRoute>} />
+          <Route path="/pages/teachermain" element={<PrivateRoute><TeacherMain /></PrivateRoute>} />
+          <Route path="/pages/teacherclasses" element={<PrivateRoute><TeacherMainClasses /></PrivateRoute>} />
+          <Route path="/pages/teacherstudents" element={<PrivateRoute><TeacherStudents /></PrivateRoute>} />
+          <Route path="/pages/teacherassignments" element={<PrivateRoute><TeacherAssignments /></PrivateRoute>} />
+          <Route path="/pages/teachergrades" element={<PrivateRoute><TeacherGrades /></PrivateRoute>} />
+          <Route path="/pages/teachercalendar" element={<PrivateRoute><TeacherCalendar /></PrivateRoute>} />
+          <Route path="/pages/teachermessages" element={<PrivateRoute><TeacherMessages /></PrivateRoute>} />
+          <Route path="/pages/teachermeetings" element={<PrivateRoute><TeacherMeetings /></PrivateRoute>} />
+          <Route path="/pages/teacheraccount" element={<PrivateRoute><TeacherAccount /></PrivateRoute>} />
+          <Route path="/pages/studentmain" element={<PrivateRoute><StudentMain /></PrivateRoute>} />
+          <Route path="/pages/studentclass" element={<PrivateRoute><StudentClass /></PrivateRoute>} />
+          <Route path="/pages/studentlesson" element={<PrivateRoute><StudentLesson /></PrivateRoute>} />
+          <Route path="/pages/studentcalendar" element={<PrivateRoute><StudentCalendar /></PrivateRoute>} />
+          <Route path="/pages/studentgrades" element={<PrivateRoute><StudentGrades /></PrivateRoute>} />
+          <Route path="/pages/studentmeetings" element={<PrivateRoute><StudentMeetings /></PrivateRoute>} />
+          <Route path="/pages/studentmessages" element={<PrivateRoute><StudentMessages /></PrivateRoute>} />
+          <Route path="/pages/studentaccount" element={<PrivateRoute><StudentAccount /></PrivateRoute>} />
           <Route path="/pages/principallogin" element={<PrincipalLogin />} />
           <Route path="/pages/studentlogin" element={<StudentLogin />} />
           <Route path="/pages/teacherlogin" element={<TeacherLogin />} />
         </Routes>
 
         <ToastContainer position="top-right" autoClose={3000} />
+            </AuthProvider>
+
       </Router>
-    </AuthProvider>
   );
 }
 

@@ -3,15 +3,13 @@ import Axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../pages/AuthContext";
 import { toast } from "react-toastify";
-
-
+import { Link } from "react-router-dom";
 
 function TeacherLogin() {
   const [text, setText] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
-
+  const { setUser, scheduleLogout } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,24 +19,34 @@ function TeacherLogin() {
         Password: password,
       });
 
- if (response.data.teacher) {
-  setUser(response.data.teacher);
+      if (response.data.teacher && response.data.access) {
+        // Set user in context
+        setUser(response.data.teacher);
 
-  localStorage.setItem("teacher", JSON.stringify(response.data.teacher));
+        // Store in localStorage
+        localStorage.setItem("teacher", JSON.stringify(response.data.teacher));
+        localStorage.setItem("user", JSON.stringify(response.data.teacher)); // For AuthContext compatibility
+        localStorage.setItem("roleName", "teacher"); // For display/debugging
+        localStorage.setItem("accessToken", response.data.access);
+        localStorage.setItem("refreshToken", response.data.refresh);
+        localStorage.setItem("teacherId", response.data.teacher.id);
+        localStorage.setItem("teacherNumber", response.data.teacher.TeacherNumber);
+        localStorage.setItem("role", "2"); // For routing decisions
 
-  localStorage.setItem("teacherId", response.data.teacher.id);
-    
-  localStorage.setItem("teacherNumber", response.data.teacher.TeacherNumber); // ✅ Add this
+        // Schedule automatic logout when JWT expires
+        scheduleLogout(response.data.access);
 
-  console.log("Logged in user:", response.data.teacher);
-}
-      toast.success("Login successful! ");
-
-
-      navigate("/pages/teachermain");
+        toast.success("Login successful!");
+        navigate("/pages/teachermain");
+      } else {
+        toast.error("Login failed. Invalid response from server.");
+      }
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
-      toast.error("Login failed. Please check your credentials.");
+      
+      // Handle specific error messages from backend
+      const errorMessage = error.response?.data?.message || "Login failed. Please check your credentials.";
+      toast.error(errorMessage);
     }
   };
 
@@ -46,8 +54,20 @@ function TeacherLogin() {
     <div className="flex flex-col items-center justify-center min-h-screen w-screen bg-gray-100">
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          
-          
+          <div className="flex justify-center gap-6 mb-6 text-gray-400">
+            <Link to="/" className=" hover:underline font-medium">
+              Home 
+            </Link>
+            <Link to="/pages/principallogin" className=" hover:underline font-medium">
+              Principal 
+            </Link>
+            <Link to="/pages/teacherlogin" className=" hover:underline font-medium">
+              Teacher 
+            </Link>
+            <Link to="/pages/studentlogin" className=" hover:underline font-medium">
+              Student 
+            </Link>
+          </div>
           <h2 className="mt-10 text-center text-3xl/9 font-bold tracking-tight text-[#ffc01d]">
             Sign in to your account
           </h2> 
@@ -103,8 +123,6 @@ function TeacherLogin() {
               </button>
             </div>
           </form>
-
-         
         </div>
       </div>
     </div>

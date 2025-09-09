@@ -27,7 +27,7 @@ export default function StudentAccountHero() {
   }
 
   try {
-    const studentId = localStorage.getItem("studentId"); // use studentId
+    const studentId = localStorage.getItem("studentId"); 
     const res = await axios.post(
       `http://127.0.0.1:8000/Hub/student/${studentId}/change-password/`,
       {

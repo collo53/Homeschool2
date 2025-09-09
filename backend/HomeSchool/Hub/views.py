@@ -14,26 +14,26 @@ from .serializers import PrincipalLoginSerializer, StudentTableSerializer, Teach
 from django.contrib.auth.hashers import make_password,check_password
 from django.db.models import Q
 from django.http import JsonResponse ,Http404
-from django.contrib.auth import authenticate
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model,login
 from rest_framework import generics, permissions
 from django.db.models import F,OuterRef, Subquery
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.http import require_http_methods
 from django.utils.timezone import now
 from datetime import datetime
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
+import datetime, jwt
 
- 
 
 User = get_user_model()
-
 class PrincipalLogin(APIView):
     def post(self, request):
         email = request.data.get("Email")
         password = request.data.get("Password")
 
         if not email or not password:
-            return Response({"message": " Missing credentials"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Missing credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user_obj = User.objects.get(email=email)
@@ -43,15 +43,19 @@ class PrincipalLogin(APIView):
         user = authenticate(request, username=user_obj.username, password=password)
 
         if user is not None and user.is_superuser:
+            refresh = RefreshToken.for_user(user)
             return Response({
-                "message": "Login successful",
                 "user": {
-                    "username": user.username,
-                    "email": user.email
-                }
+                    "id": user.id,
+                    "email": user.email,
+                    "name": user.username,
+                },
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "expires_in": refresh.access_token.lifetime.total_seconds(),
             }, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response({"message": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 class StudentLogin(APIView):
     def post(self, request):
         student_number = request.data.get("studentNumber")
@@ -67,12 +71,39 @@ class StudentLogin(APIView):
                 log_activity(user=student.name, action="Failed login attempt")
                 return Response({"message": "Invalid student number or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
+            expiry = datetime.datetime.utcnow() + datetime.timedelta(hours=3)
+            access_token = jwt.encode(
+                {
+                    "student_id": student.id,
+                    "student_number": student.studentNumber,
+                    "role": "student",  
+                    "exp": expiry,
+                    "iat": datetime.datetime.utcnow(),
+                },
+                settings.SECRET_KEY,
+                algorithm="HS256"
+            )
+
+            refresh_expiry = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+            refresh_token = jwt.encode(
+                {
+                    "student_id": student.id,
+                    "type": "refresh",
+                    "exp": refresh_expiry,
+                    "iat": datetime.datetime.utcnow()
+                },
+                settings.SECRET_KEY,
+                algorithm="HS256"
+            )
+
             serialized_student = StudentTableSerializer(student)
             log_activity(user=student.name, action="Student logged in successfully")
 
             return Response({
                 "message": "Login successful",
-                "student": serialized_student.data
+                "student": serialized_student.data,
+                "access": access_token,
+                "refresh": refresh_token
             }, status=status.HTTP_200_OK)
 
         except StudentTable.DoesNotExist:
@@ -85,26 +116,62 @@ class TeacherLogin(APIView):
         password = request.data.get("Password")
 
         if not teacher_number or not password:
-            return Response({"message": "Missing credentials"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "message": "Teacher number and password are required"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             teacher = TeacherDetails.objects.get(TeacherNumber=teacher_number)
-
+            
             if not check_password(password, teacher.Password):
-                log_activity(user=teacher.Name, action="Failed login attempt")
-                return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({
+                    "message": "Invalid credentials"
+                }, status=status.HTTP_401_UNAUTHORIZED)
+
+            expiry = datetime.datetime.utcnow() + datetime.timedelta(hours=3)  
+            access_token = jwt.encode(
+                {
+                    "teacher_id": teacher.id,
+                    "teacher_number": teacher.TeacherNumber,
+                    "role": "teacher",   
+                    "exp": expiry,
+                    "iat": datetime.datetime.utcnow()  
+                },
+                settings.SECRET_KEY,
+                algorithm="HS256"
+            )
+
+            refresh_expiry = datetime.datetime.utcnow() + datetime.timedelta(days=7)  
+            refresh_token = jwt.encode(
+                {
+                    "teacher_id": teacher.id,
+                    "type": "refresh",
+                    "exp": refresh_expiry,
+                    "iat": datetime.datetime.utcnow()
+                },
+                settings.SECRET_KEY,
+                algorithm="HS256"
+            )
 
             serialized_teacher = TeacherTableSerializer(teacher)
-            log_activity(user=teacher.Name, action="Teacher logged in successfully")
 
             return Response({
                 "message": "Login successful",
-                "teacher": serialized_teacher.data
+                "teacher": serialized_teacher.data,
+                "access": access_token,
+                "refresh": refresh_token
             }, status=status.HTTP_200_OK)
 
         except TeacherDetails.DoesNotExist:
-            log_activity(user="Unknown Teacher", action=f"Failed login attempt: {teacher_number}")
-            return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({
+                "message": "Invalid credentials"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        
+        except Exception as e:
+            print(f"Login error: {str(e)}")
+            return Response({
+                "message": "An error occurred during login"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class AddTeacher(APIView):
     def post(self, request):

@@ -78,9 +78,7 @@ const CalendarHero = () => {
         </button>
       </div>
 
-      {/* Events List */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Upcoming Events */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow">
             <div className="p-5 border-b border-gray-200 flex items-center gap-2">
@@ -126,7 +124,6 @@ const CalendarHero = () => {
           </div>
         </div>
 
-        {/* Today's Schedule */}
         <div>
           <div className="bg-white rounded-lg shadow">
             <div className="p-5 border-b border-gray-200 flex items-center gap-2">
@@ -150,7 +147,6 @@ const CalendarHero = () => {
         </div>
       </div>
 
-      {/* Modal */}
       {modalOpen && (
         <EventModal
           event={editEvent}

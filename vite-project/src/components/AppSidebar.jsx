@@ -16,7 +16,7 @@ function AppSidebar() {
       </div>
 
       
-      <ul className="mt-10 space-y-5 w-full">
+      <ul className="mt-10 space-y-5 w-full overflow-y-scroll">
         <SidebarLink icon={<FaSchool />} label="Dashboard" to="/pages/Principal" />
         <SidebarLink icon={<FaChalkboard />} label="Teachers" to="/pages/teachers" />
         <SidebarLink icon={<FaGraduationCap />} label="Students" to="/pages/students" />

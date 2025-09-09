@@ -27,7 +27,6 @@ function Courses() {
         status: c.Status,
       }));
       setCourses(normalizedCourses);
-      console.log("Courses:", normalizedCourses);
     } catch (error) {
       console.error("Error loading courses:", error);
     }
@@ -78,10 +77,9 @@ function Courses() {
       updatedCourse
     );
 
-    // Refresh courses after update
     const updatedCourses = await axios.get("http://127.0.0.1:8000/Hub/getcourses/");
     const normalizedCourses = updatedCourses.data.map((c) => ({
-      id: c.id, // keep DB id
+      id: c.id, 
       name: c.Name,
       status: c.Status,
     }));

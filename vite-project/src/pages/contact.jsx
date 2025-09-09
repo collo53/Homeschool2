@@ -13,7 +13,7 @@ function Contact() {
       <div>
         <ContactUs />
       </div>
-      <div>
+      <div className="">
         <Footer />
       </div>
     </div>

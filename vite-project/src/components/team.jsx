@@ -1,71 +1,62 @@
 import React from "react";
 
-function Team(){
-    return (
-    <section className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:px-8 flex flex-col md:flex-row justify-around items-center gap-5">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-100),white)] opacity-20" />
-            <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl ring-1 shadow-indigo-600/10 ring-indigo-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center" />
-                <div className="mx-auto max-w-2xl lg:max-w-4xl">
-                    <img
-                    alt=""
-                    src="https://tailwindcss.com/plus-assets/img/logos/workcation-logo-indigo-600.svg"
-                    className="mx-auto h-12"
-                    />
-                <figure className="mt-10">
-                <blockquote className="text-center text-xl/8 font-semibold text-gray-900 sm:text-2xl/9">
-                    <p>
-                    “Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo expedita voluptas culpa sapiente alias
-                    molestiae. Numquam corrupti in laborum sed rerum et corporis.”
-                    </p>
-                </blockquote>
-                <figcaption className="mt-10">
-                    <img
-                    alt=""
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    className="mx-auto size-10 rounded-full"
-                    />
-                    <div className="mt-4 flex items-center justify-center space-x-3 text-base">
-                    <div className="font-semibold text-gray-900">John Gathage</div>
-                    <svg width={3} height={3} viewBox="0 0 2 2" aria-hidden="true" className="fill-gray-900">
-                        <circle r={1} cx={1} cy={1} />
-                    </svg>
-                    <div className="text-gray-600">Owner</div>
-                    </div>
-                </figcaption>
-                </figure>
-          </div>
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-indigo-100),white)] opacity-20" />
-      <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl ring-1 shadow-indigo-600/10 ring-indigo-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center" />
-      <div className="mx-auto max-w-2xl lg:max-w-4xl">
-        <img
-          alt=""
-          src="https://tailwindcss.com/plus-assets/img/logos/workcation-logo-indigo-600.svg"
-          className="mx-auto h-12"
-        />
-        <figure className="mt-10">
-          <blockquote className="text-center text-xl/8 font-semibold text-gray-900 sm:text-2xl/9">
-            <p>
-              “Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo expedita voluptas culpa sapiente alias
-              molestiae. Numquam corrupti in laborum sed rerum et corporis.”
-            </p>
-          </blockquote>
-          <figcaption className="mt-10">
-            <img
-              alt=""
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              className="mx-auto size-10 rounded-full"
-            />
-            <div className="mt-4 flex items-center justify-center space-x-3 text-base">
-              <div className="font-semibold text-gray-900">Marion Mumbua</div>
-              <svg width={3} height={3} viewBox="0 0 2 2" aria-hidden="true" className="fill-gray-900">
-                <circle r={1} cx={1} cy={1} />
-              </svg>
-              <div className="text-gray-600">owner</div>
+function Team() {
+  const teamMembers = [
+    {
+      name: "John Gathage",
+      role: "Founder & CEO",
+      image:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      quote:
+        "Education is not preparation for life; education is life itself. We are committed to making learning engaging and accessible.",
+    },
+    {
+      name: "Marion Mumbua",
+      role: "Co-Founder & Director",
+      image:
+        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      quote:
+        "Our goal is to nurture curiosity and build strong foundations for lifelong learning in every child we work with.",
+    },
+  ];
+
+  return (
+    <section className="relative bg-white px-6 py-24 sm:py-32 lg:px-12">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(50rem_60rem_at_top,var(--color-indigo-100),white)] opacity-30" />
+
+      <div className="mx-auto max-w-6xl">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-16">
+          Meet Our Team
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {teamMembers.map((member, index) => (
+            <div
+              key={index}
+              className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-center"
+            >
+              <img
+                src={member.image}
+                alt={member.name}
+                className="mx-auto size-24 rounded-full shadow-md"
+              />
+
+              <blockquote className="mt-6 text-gray-700 italic">
+                “{member.quote}”
+              </blockquote>
+
+              <figcaption className="mt-6 flex flex-col items-center">
+                <div className="font-semibold text-gray-900 text-lg">
+                  {member.name}
+                </div>
+                <div className="text-gray-500 text-sm">{member.role}</div>
+              </figcaption>
             </div>
-          </figcaption>
-        </figure>
+          ))}
+        </div>
       </div>
-        </section>
-      );
+    </section>
+  );
 }
+
 export default Team;

@@ -11,7 +11,7 @@ import {
 
 const StudentsDashboard = () => {
   const studentId = localStorage.getItem("studentId");
-  const storedStudent = JSON.parse(localStorage.getItem("student")); // logged-in student data
+  const storedStudent = JSON.parse(localStorage.getItem("student")); 
 
   const [stats, setStats] = useState({});
   const [upcomingClasses, setUpcomingClasses] = useState([]);
@@ -56,7 +56,7 @@ const StudentsDashboard = () => {
         const formatted = res.data.map(meeting => ({
           title: meeting.title,
           description: meeting.description || "No description",
-          date: new Date(meeting.date + "T" + meeting.time), // combine date & time
+          date: new Date(meeting.date + "T" + meeting.time), 
         }));
         setUpcomingMeetings(formatted);
       })

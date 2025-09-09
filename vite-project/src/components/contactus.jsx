@@ -17,11 +17,11 @@ function ContactUs() {
           className="relative left-1/2 -z-10 aspect-1155/678 w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]"
         />
       </div>
-      <div className="mx-auto max-w-2xl text-center">
+      <div className="mx-auto max-w-2xl text-center pt-5">
         <h2 className="text-4xl font-semibold tracking-tight text-balance text-[#ffc01d] sm:text-5xl">Contact Us</h2>
-        <p className="mt-2 text-lg/8 text-gray-600">Aute magna irure deserunt veniam aliqua magna enim voluptate.</p>
+        <p className="mt-2 text-lg/8 text-gray-600">For more inquiries contact us and we will get back to you at the earliest convinience</p>
       </div>
-      <form action="#" method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
+      <form action="https://formspree.io/f/mpwprjoj" method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
         <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
           <div>
             <label htmlFor="first-name" className="block text-sm/6 font-semibold text-gray-900">

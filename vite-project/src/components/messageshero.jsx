@@ -96,8 +96,7 @@ export default function MessagesHero() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Messages</h1>
           <p className="text-slate-600 mt-1">
@@ -113,7 +112,6 @@ export default function MessagesHero() {
         </button>
       </div>
 
-      {/* Search */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
