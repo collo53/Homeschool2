@@ -10,7 +10,7 @@ function StudentProfileModal({ student, onClose, setStudents }) {
   if (!student || !student.id) return;
 
   axios
-    .get(`https://homeschoolhub-sigma.vercel.app/Hub/getteacherforstudent/${student.id}/`)
+    .get(`https://homeschool2.onrender.com/Hub/getteacherforstudent/${student.id}/`)
     .then((res) => {
       setTeacherName(res.data.teacher || "None");
     })
@@ -26,9 +26,9 @@ const handleDeleteStudent = async () => {
   }
 
   try {
-    await axios.delete(`https://homeschoolhub-sigma.vercel.app/Hub/delete-student/${student.id}/`);
+    await axios.delete(`https://homeschool2.onrender.com/Hub/delete-student/${student.id}/`);
 
-    const updated = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getstudents/");
+    const updated = await axios.get("https://homeschool2.onrender.com/Hub/getstudents/");
     setStudents(updated.data);
 
       toast.success(" Student deleted successfully!");

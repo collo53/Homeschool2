@@ -27,14 +27,14 @@ export default function TeacherAssignmentHero() {
       try {
         const teacherId = localStorage.getItem("teacherId");
         const response = await axios.get(
-          `https://homeschoolhub-sigma.vercel.app/Hub/assignments/teacher/${teacherId}/`
+          `https://homeschool2.onrender.com/Hub/assignments/teacher/${teacherId}/`
         );
         setAssignments(
           response.data.map((a) => ({
             ...a,
             class: a.class_name,
             dueDate: a.due_date,
-            fileURL: a.file ? `https://homeschoolhub-sigma.vercel.app${a.file}` : null,
+            fileURL: a.file ? `https://homeschool2.onrender.com${a.file}` : null,
           }))
         );
       } catch (error) {
@@ -77,7 +77,7 @@ export default function TeacherAssignmentHero() {
     try {
       if (isEditing && selectedAssignment) {
         const response = await axios.put(
-          `https://homeschoolhub-sigma.vercel.app/Hub/assignments/${selectedAssignment.id}/`,
+          `https://homeschool2.onrender.com/Hub/assignments/${selectedAssignment.id}/`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -91,7 +91,7 @@ export default function TeacherAssignmentHero() {
         );
       } else {
         const response = await axios.post(
-          "https://homeschoolhub-sigma.vercel.app/Hub/assignments/",
+          "https://homeschool2.onrender.com/Hub/assignments/",
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -103,7 +103,7 @@ export default function TeacherAssignmentHero() {
             ...addedAssignment,
             class: addedAssignment.class_name,
             fileURL: addedAssignment.file
-              ? `https://homeschoolhub-sigma.vercel.app${addedAssignment.file}`
+              ? `https://homeschool2.onrender.com${addedAssignment.file}`
               : null,
           },
         ]);
@@ -147,7 +147,7 @@ export default function TeacherAssignmentHero() {
   const viewSubmissions = async (assignment) => {
     try {
       const response = await axios.get(
-        `https://homeschoolhub-sigma.vercel.app/Hub/assignments/${assignment.id}/submissions/`
+        `https://homeschool2.onrender.com/Hub/assignments/${assignment.id}/submissions/`
       );
       setSubmissions(response.data);
       setSelectedAssignment(assignment);
@@ -283,7 +283,7 @@ export default function TeacherAssignmentHero() {
                   <li key={s.id} className="flex justify-between border p-2 mb-2">
                     <span>{s.student_name || "Student"}</span>
                     <a
-                      href={`https://homeschoolhub-sigma.vercel.app${s.file}`}
+                      href={`https://homeschool2.onrender.com${s.file}`}
                       className="text-blue-600"
                       target="_blank"
                       rel="noopener noreferrer"

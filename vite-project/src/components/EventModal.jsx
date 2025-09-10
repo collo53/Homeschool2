@@ -34,7 +34,7 @@ const EventModal = ({ event, onClose, onSave }) => {
       Type: formData.type,
     };
     try {
-      const response = await axios.post("https://homeschoolhub-sigma.vercel.app/Hub/addevents/", newEvent);
+      const response = await axios.post("https://homeschool2.onrender.com/Hub/addevents/", newEvent);
       console.log("Event added successfully:", response.data);
     }
     catch (error) {

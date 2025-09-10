@@ -50,7 +50,7 @@ const fetchMessages = async () => {
     }
 
     const response = await axios.get(
-      `https://homeschoolhub-sigma.vercel.app/Hub/getteachermessages/${teacherNumber}/`
+      `https://homeschool2.onrender.com/Hub/getteachermessages/${teacherNumber}/`
     );
 
     const formatted = response.data.map((msg) => ({

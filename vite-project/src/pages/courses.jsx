@@ -20,7 +20,7 @@ function Courses() {
  useEffect(() => {
   const fetchData = async () => {
     try {
-      const courseRes = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getcourses/");
+      const courseRes = await axios.get("https://homeschool2.onrender.com/Hub/getcourses/");
       const normalizedCourses = courseRes.data.map((c) => ({
         id: c.id, 
         name: c.Name,
@@ -44,10 +44,10 @@ function Courses() {
     };
 
     try {
-      const response = await axios.post("https://homeschoolhub-sigma.vercel.app/Hub/addcourse/", newCourse);
+      const response = await axios.post("https://homeschool2.onrender.com/Hub/addcourse/", newCourse);
       console.log("Add response:", response.data);
 
-      const updatedCourses = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getcourses/");
+      const updatedCourses = await axios.get("https://homeschool2.onrender.com/Hub/getcourses/");
       const normalizedCourses = updatedCourses.data.map((c, index) => ({
         id: index + 1,
         name: c.Name,
@@ -73,11 +73,11 @@ function Courses() {
     };
 
     await axios.put(
-      `https://homeschoolhub-sigma.vercel.app/Hub/updatecourse/${editingCourse.id}/`,
+      `https://homeschool2.onrender.com/Hub/updatecourse/${editingCourse.id}/`,
       updatedCourse
     );
 
-    const updatedCourses = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getcourses/");
+    const updatedCourses = await axios.get("https://homeschool2.onrender.com/Hub/getcourses/");
     const normalizedCourses = updatedCourses.data.map((c) => ({
       id: c.id, 
       name: c.Name,
@@ -97,9 +97,9 @@ function Courses() {
 
 const handleDelete = async (id) => {
   try {
-    await axios.delete(`https://homeschoolhub-sigma.vercel.app/Hub/deletecourse/${id}/`);
+    await axios.delete(`https://homeschool2.onrender.com/Hub/deletecourse/${id}/`);
 
-    const updatedCourses = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getcourses/");
+    const updatedCourses = await axios.get("https://homeschool2.onrender.com/Hub/getcourses/");
     const normalizedCourses = updatedCourses.data.map((c) => ({
       id: c.id, 
       name: c.Name,

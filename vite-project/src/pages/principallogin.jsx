@@ -15,7 +15,7 @@ function PrincipalLogin() {
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const response = await Axios.post("https://homeschoolhub-sigma.vercel.app/Hub/principallogin/", {
+    const response = await Axios.post("https://homeschool2.onrender.com/Hub/principallogin/", {
       Email: email,
       Password: password,
     });

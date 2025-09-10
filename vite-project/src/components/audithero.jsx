@@ -8,7 +8,7 @@ export default function AuditLogs() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await fetch("https://homeschoolhub-sigma.vercel.app/Hub/activities/");
+        const response = await fetch("https://homeschool2.onrender.com/Hub/activities/");
         const data = await response.json();
         setActivities(data);
       } catch (error) {

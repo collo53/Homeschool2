@@ -18,7 +18,7 @@ export default function TeachersDashboardHero() {
 
     async function fetchStats() {
       try {
-        const res = await axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/teachers/${teacherId}/stats/`);
+        const res = await axios.get(`https://homeschool2.onrender.com/Hub/teachers/${teacherId}/stats/`);
         const data = res.data;
 
         setStats([
@@ -58,10 +58,10 @@ export default function TeachersDashboardHero() {
 
     async function fetchActivities() {
       try {
-        const recentRes = await axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/teachers/${teacherId}/recent-activities/`);
+        const recentRes = await axios.get(`https://homeschool2.onrender.com/Hub/teachers/${teacherId}/recent-activities/`);
         setRecentActivities(recentRes.data);
 
-        const upcomingRes = await axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/teachers/${teacherId}/upcoming-activities/`);
+        const upcomingRes = await axios.get(`https://homeschool2.onrender.com/Hub/teachers/${teacherId}/upcoming-activities/`);
         setUpcomingActivities(upcomingRes.data);
       } catch (err) {
         console.error("Error fetching activities:", err);

@@ -53,7 +53,7 @@ function AddTeacherModal({ onClose, setTeachers }) {
     };
 
     try {
-      const response = await fetch("https://homeschoolhub-sigma.vercel.app/Hub/addteacher/", {
+      const response = await fetch("https://homeschool2.onrender.com/Hub/addteacher/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(teacherPayload),

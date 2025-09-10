@@ -9,7 +9,7 @@ export default function TeacherStudentsHero({ teacher }) {
     const fetchAssignedStudents = async () => {
       try {
 
-        const response = await axios.get(`https://homeschoolhub-sigma.vercel.app/Hub/getstudentsforteacher/${teacher.id}/`);
+        const response = await axios.get(`https://homeschool2.onrender.com/Hub/getstudentsforteacher/${teacher.id}/`);
         setAssignedStudents(response.data);
       } catch (error) {
         console.error("Failed to fetch students for teacher:", error);

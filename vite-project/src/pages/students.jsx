@@ -22,7 +22,7 @@ function Students(){
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getstudents/");
+      const response = await axios.get("https://homeschool2.onrender.com/Hub/getstudents/");
       setStudents(response.data);
     } catch (error) {
       console.error("Error fetching students:", error);

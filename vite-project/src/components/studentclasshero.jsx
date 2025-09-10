@@ -9,7 +9,7 @@ const StudentClassHero = () => {
   useEffect(() => {
     if (!studentId) return;
     axios
-      .get(`https://homeschoolhub-sigma.vercel.app/Hub/student/${studentId}/classes/`)
+      .get(`https://homeschool2.onrender.com/Hub/student/${studentId}/classes/`)
       .then((res) => {
         const teacher = res.data.teacher;
         if (teacher) {

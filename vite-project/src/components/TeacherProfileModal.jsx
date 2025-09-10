@@ -11,7 +11,7 @@ function TeacherProfileModal({ teacher, onClose, setTeachers }) {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getstudents/");
+        const response = await axios.get("https://homeschool2.onrender.com/Hub/getstudents/");
         setAllStudents(response.data); // should return list of {id, name, grade}
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -34,7 +34,7 @@ function TeacherProfileModal({ teacher, onClose, setTeachers }) {
 
   const handleSave = async () => {
     try {
-      await axios.post("https://homeschoolhub-sigma.vercel.app/Hub/assign-students/", {
+      await axios.post("https://homeschool2.onrender.com/Hub/assign-students/", {
         teacher_id: teacher.id,
         students: assignedStudents, 
       });
@@ -58,7 +58,7 @@ function TeacherProfileModal({ teacher, onClose, setTeachers }) {
   if (!window.confirm(`Are you sure you want to delete ${teacher.Name}?`)) return;
 
   try {
-    await axios.delete(`https://homeschoolhub-sigma.vercel.app/Hub/delete-teacher/${teacher.id}/`);
+    await axios.delete(`https://homeschool2.onrender.com/Hub/delete-teacher/${teacher.id}/`);
     
     setTeachers((prev) => prev.filter((t) => t.id !== teacher.id));
 

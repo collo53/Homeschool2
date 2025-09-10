@@ -42,7 +42,7 @@ export default function MessagesHero() {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getmessages/");
+      const response = await axios.get("https://homeschool2.onrender.com/Hub/getmessages/");
       const formatted = response.data.map((msg) => ({
         id: msg.id || Date.now(),
         from: msg.Sender,

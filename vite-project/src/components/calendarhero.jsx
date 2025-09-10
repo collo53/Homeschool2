@@ -23,7 +23,7 @@ const CalendarHero = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("https://homeschoolhub-sigma.vercel.app/Hub/getevents/");
+        const response = await axios.get("https://homeschool2.onrender.com/Hub/getevents/");
         const fetchedEvents = response.data.map(event => ({
           id: event.id,
           title: event.Title,
