@@ -32,7 +32,7 @@ const handleSubmit = async (e) => {
       localStorage.setItem("role", "3");
 
       scheduleLogout(response.data.access);
-
+      console.log("Login successful, student data:", response.data.student);
       toast.success("Login successful!");
       navigate("/pages/studentmain");
     } else {
