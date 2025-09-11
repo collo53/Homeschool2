@@ -23,14 +23,15 @@ const handleSubmit = async (e) => {
 
     if (response.data.student && response.data.access) {
       setUser(response.data.student);
-
+      localStorage.setItem("student", JSON.stringify(response.data.student));
       localStorage.setItem("user", JSON.stringify(response.data.student));
       localStorage.setItem("accessToken", response.data.access);
       localStorage.setItem("refreshToken", response.data.refresh);
       localStorage.setItem("studentId", response.data.student.id);
       localStorage.setItem("studentNumber", response.data.student.studentNumber);
       localStorage.setItem("role", "3");
-
+      localStorage.setItem("roleName", "student");
+      
       scheduleLogout(response.data.access);
       console.log("Login successful, student data:", response.data.student);
       toast.success("Login successful!");
