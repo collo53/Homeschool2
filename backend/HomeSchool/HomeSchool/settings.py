@@ -79,7 +79,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    'https://homeschoolhub-sigma.vercel.app/',
+    'https://homeschoolhub-sigma.vercel.app',
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
