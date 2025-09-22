@@ -21,22 +21,26 @@ const handleSubmit = async (e) => {
       Password: password,
     });
 
-    if (response.data.student && response.data.access) {
-      setUser(response.data.student);
-      localStorage.setItem("student", JSON.stringify(response.data.student));
-      localStorage.setItem("user", JSON.stringify(response.data.student));
-      localStorage.setItem("accessToken", response.data.access);
-      localStorage.setItem("refreshToken", response.data.refresh);
-      localStorage.setItem("studentId", response.data.student.id);
-      localStorage.setItem("studentNumber", response.data.student.studentNumber);
-      localStorage.setItem("role", "3");
-      localStorage.setItem("roleName", "student");
-      
-      scheduleLogout(response.data.access);
-      console.log("Login successful, student data:", response.data.student);
-      toast.success("Login successful!");
-      navigate("/pages/studentmain");
-    } else {
+ if (response.data.student_table && response.data.access) {
+  setUser(response.data.student_table);
+
+  localStorage.setItem("studentTable", JSON.stringify(response.data.student_table));
+  localStorage.setItem("user", JSON.stringify(response.data.student_table));
+  localStorage.setItem("accessToken", response.data.access);
+  localStorage.setItem("refreshToken", response.data.refresh);
+
+  // save both IDs
+  localStorage.setItem("studentTableId", response.data.student_table.id);
+  localStorage.setItem("studentId", response.data.student_id); // <-- Student model ID
+  localStorage.setItem("studentNumber", response.data.student_table.studentNumber);
+  localStorage.setItem("role", "3");
+  localStorage.setItem("roleName", "student");
+
+  scheduleLogout(response.data.access);
+  toast.success("Login successful!");
+  navigate("/pages/studentmain");
+}
+else {
       toast.error("Invalid login. No student returned.");
     }
   } catch (error) {
