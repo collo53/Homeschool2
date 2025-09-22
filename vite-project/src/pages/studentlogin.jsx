@@ -23,11 +23,11 @@ const handleSubmit = async (e) => {
 
  if (response.data.student_table && response.data.access) {
   setUser(response.data.student_table);
-  localStorage.setItem("student", JSON.stringify(response.data.student));
   localStorage.setItem("studentTable", JSON.stringify(response.data.student_table));
   localStorage.setItem("user", JSON.stringify(response.data.student_table));
   localStorage.setItem("accessToken", response.data.access);
   localStorage.setItem("refreshToken", response.data.refresh);
+   
   localStorage.setItem("studentTableId", response.data.student_table.id);
   localStorage.setItem("studentId", response.data.student_id); // <-- Student model ID
   localStorage.setItem("studentNumber", response.data.student_table.studentNumber);
