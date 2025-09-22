@@ -65,18 +65,22 @@ class StudentLogin(APIView):
             return Response({"message": "Missing credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            student = StudentTable.objects.get(studentNumber=student_number)
+            student_table = StudentTable.objects.get(studentNumber=student_number)
 
-            if not check_password(password, student.Password):
-                log_activity(user=student.name, action="Failed login attempt")
+            if not check_password(password, student_table.Password):
+                log_activity(user=student_table.name, action="Failed login attempt")
                 return Response({"message": "Invalid student number or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            # try to link to Student model by name (or another field you prefer)
+            linked_student = Student.objects.filter(name=student_table.name).first()
 
             expiry = datetime.datetime.utcnow() + datetime.timedelta(hours=3)
             access_token = jwt.encode(
                 {
-                    "student_id": student.id,
-                    "student_number": student.studentNumber,
-                    "role": "student",  
+                    "student_table_id": student_table.id,
+                    "student_id": linked_student.id if linked_student else None,
+                    "student_number": student_table.studentNumber,
+                    "role": "student",
                     "exp": expiry,
                     "iat": datetime.datetime.utcnow(),
                 },
@@ -87,7 +91,8 @@ class StudentLogin(APIView):
             refresh_expiry = datetime.datetime.utcnow() + datetime.timedelta(days=7)
             refresh_token = jwt.encode(
                 {
-                    "student_id": student.id,
+                    "student_table_id": student_table.id,
+                    "student_id": linked_student.id if linked_student else None,
                     "type": "refresh",
                     "exp": refresh_expiry,
                     "iat": datetime.datetime.utcnow()
@@ -96,12 +101,13 @@ class StudentLogin(APIView):
                 algorithm="HS256"
             )
 
-            serialized_student = StudentTableSerializer(student)
-            log_activity(user=student.name, action="Student logged in successfully")
+            serialized_student_table = StudentTableSerializer(student_table)
+            log_activity(user=student_table.name, action="Student logged in successfully")
 
             return Response({
                 "message": "Login successful",
-                "student": serialized_student.data,
+                "student_table": serialized_student_table.data,
+                "student_id": linked_student.id if linked_student else None,  # include Student model id
                 "access": access_token,
                 "refresh": refresh_token
             }, status=status.HTTP_200_OK)
